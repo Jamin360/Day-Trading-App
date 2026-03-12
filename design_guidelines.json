@@ -1,0 +1,182 @@
+{
+  "project_name": "DayTradingPro",
+  "design_philosophy": {
+    "persona": "The Performance Pro",
+    "core_values": [
+      "Precision: Data is the hero. Zero ambiguity.",
+      "Speed: Visuals must feel fast. No laggy animations.",
+      "Focus: Dark mode is not an option, it is the law. Reduce eye strain.",
+      "Reality: Simulate the pressure of real trading through high-stakes visual cues."
+    ],
+    "mood": "Elite, Technical, Cyber-Physical, High-Contrast"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "data": "JetBrains Mono, monospace"
+    },
+    "installation": "Import from Google Fonts in index.css: @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;600;800&display=swap');",
+    "usage_rules": {
+      "headings": "Use 'Manrope' for all page titles and widget headers. Weight: 600 or 800. Tracking: tight.",
+      "body": "Use 'Inter' for labels, navigation, and general text. Weight: 400 or 500.",
+      "data": "Use 'JetBrains Mono' for ALL numbers, prices, P&L, and tabular data. This is non-negotiable for a trading app.",
+      "styles": {
+        "h1": "text-4xl md:text-5xl font-extrabold tracking-tight text-white",
+        "h2": "text-2xl md:text-3xl font-bold tracking-tight text-white/90",
+        "h3": "text-lg font-semibold tracking-normal text-white/80",
+        "price_large": "font-mono text-3xl font-bold tracking-tight",
+        "price_small": "font-mono text-sm font-medium",
+        "label": "text-xs font-medium uppercase tracking-wider text-muted-foreground",
+        "pnl_positive": "text-emerald-500 font-mono font-medium",
+        "pnl_negative": "text-rose-500 font-mono font-medium"
+      }
+    }
+  },
+  "colors": {
+    "theme": "dark",
+    "palette": {
+      "background": {
+        "default": "#09090b",
+        "card": "#121214",
+        "overlay": "#18181b"
+      },
+      "text": {
+        "primary": "#f4f4f5",
+        "secondary": "#a1a1aa",
+        "muted": "#52525b"
+      },
+      "border": {
+        "default": "#27272a",
+        "active": "#3f3f46"
+      },
+      "brand": {
+        "primary": "#3b82f6",
+        "primary_hover": "#2563eb",
+        "accent": "#6366f1"
+      },
+      "semantic": {
+        "buy": "#22c55e",
+        "buy_dim": "rgba(34, 197, 94, 0.1)",
+        "sell": "#ef4444",
+        "sell_dim": "rgba(239, 68, 68, 0.1)",
+        "warning": "#eab308",
+        "info": "#0ea5e9"
+      }
+    },
+    "gradients": {
+      "profit_glow": "linear-gradient(180deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0) 100%)",
+      "loss_glow": "linear-gradient(180deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0) 100%)",
+      "glass": "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)"
+    }
+  },
+  "layout_and_spacing": {
+    "container": {
+      "default": "max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8",
+      "fluid": "w-full px-4"
+    },
+    "grid_system": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6",
+      "trading_view": "grid grid-cols-12 grid-rows-[auto_1fr] h-[calc(100vh-4rem)] gap-1"
+    },
+    "spacing_scale": {
+      "section_gap": "py-12 md:py-24",
+      "widget_gap": "gap-4",
+      "internal_padding": "p-4 md:p-6"
+    },
+    "border_radius": {
+      "default": "rounded-none",
+      "card": "rounded-sm",
+      "button": "rounded-sm",
+      "input": "rounded-sm"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all active:scale-95 rounded-sm px-6 py-2",
+      "buy": "bg-emerald-600 hover:bg-emerald-700 text-white w-full font-bold uppercase tracking-wide rounded-sm shadow-[0_0_15px_rgba(34,197,94,0.3)]",
+      "sell": "bg-rose-600 hover:bg-rose-700 text-white w-full font-bold uppercase tracking-wide rounded-sm shadow-[0_0_15px_rgba(239,68,68,0.3)]",
+      "ghost": "hover:bg-white/5 text-zinc-400 hover:text-white transition-colors"
+    },
+    "cards": {
+      "base": "bg-[#121214] border border-zinc-800",
+      "hover": "hover:border-zinc-700 transition-colors duration-200",
+      "glass": "backdrop-blur-xl bg-black/40 border border-white/10"
+    },
+    "inputs": {
+      "default": "bg-zinc-900/50 border-zinc-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 placeholder:text-zinc-600 text-zinc-200"
+    },
+    "charts": {
+      "background": "transparent",
+      "grid_lines": "#27272a",
+      "tooltip_bg": "#18181b",
+      "tooltip_border": "#3f3f46"
+    }
+  },
+  "visual_enhancers": {
+    "grid_background": "bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:24px_24px]",
+    "tracing_beam": "Use framer-motion to create a glowing border effect on active trade cards.",
+    "neon_accents": "Use 1px solid borders with 2px inner glow for 'Active' states.",
+    "scanlines": "Optional: Add a subtle CRT scanline overlay (opacity 0.02) for retro-tech feel."
+  },
+  "assets": {
+    "images": [
+      {
+        "category": "auth_background",
+        "url": "https://images.unsplash.com/photo-1771226281112-b7119ef4112e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMGZpbmFuY2lhbCUyMGRhdGElMjB2aXN1YWxpemF0aW9uJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzczMzQ0MTU1fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract dark wavy lines, perfect for login screen background to minimize distraction.",
+        "usage": "Login/Register page background with a heavy dark overlay (bg-black/80)."
+      },
+      {
+        "category": "chart_placeholder",
+        "url": "https://images.pexels.com/photos/6203470/pexels-photo-6203470.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Neon blue line chart",
+        "usage": "Placeholder for empty states or landing page feature showcase."
+      }
+    ],
+    "icons": "Use 'lucide-react' for all UI icons. Use 'phosphor-icons' if more technical weight is needed."
+  },
+  "motion": {
+    "principles": [
+      "Instant: Transitions should be <200ms.",
+      "Linear: Avoid bouncy springs. Trading is serious.",
+      "Feedback: Every click must have an immediate visual response (color shift or scale)."
+    ],
+    "transitions": {
+      "default": "transition-all duration-200 ease-out",
+      "hover": "transition-colors duration-150 ease-linear"
+    }
+  },
+  "accessibility": {
+    "rules": [
+      "Contrast: Ensure all text meets APCA standards. Light gray on dark gray is risky—check carefully.",
+      "Color Blindness: Do not rely solely on Red/Green. Use Icons (Arrow Up/Down) alongside colors.",
+      "Focus: Visible focus rings (blue-500) are mandatory for keyboard navigation."
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Install 'framer-motion', 'recharts' (for charts), 'lucide-react', 'clsx', 'tailwind-merge'.",
+    "2. THEME: Override tailwind.config.js colors with the Zinc-950 palette defined above. Do NOT use the default slate/gray.",
+    "3. LAYOUT: Build the Dashboard using the 'Bento' methodology. Don't just stack rows.",
+    "4. TRADING VIEW: This is the most critical screen. It needs a 3-column layout: (1) Watchlist/Positions, (2) Main Chart (Wide), (3) Order Entry (Right).",
+    "5. CHARTS: Use Recharts. Style the X/Y axis to be minimal. Remove grid lines or make them very subtle.",
+    "6. COMPONENTS: Create a 'Card' component that accepts a 'glow' prop to activate the Tracing Beam effect.",
+    "7. AUTH: Use the provided abstract background image for the login page. Add a glassmorphic card on top."
+  ],
+  "universal_guidelines": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use 'sonner' for toasts located in /app/src/components/ui/sonner.tsx"
+  ]
+}
