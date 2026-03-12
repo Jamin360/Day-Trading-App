@@ -1,0 +1,515 @@
+{
+  "timestamp": "2026-03-12T19:44:22.991670",
+  "summary": {
+    "tests_run": 20,
+    "tests_passed": 20,
+    "success_rate": 100.0
+  },
+  "test_results": [
+    {
+      "test": "Root Endpoint",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "message": "DayTradingPro API",
+        "version": "1.0.0"
+      }
+    },
+    {
+      "test": "User Registration",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYjJlNjkwOS0yZWZkLTQ4ZGMtYWY5ZC01MGEyNzI0Mzk4MzkiLCJleHAiOjE3NzM5NDk0NTF9.ORyu0E0JsySPrLfeRtLudjbwr1oxJbSfwAJblUBo8FE",
+        "token_type": "bearer",
+        "user": {
+          "id": "fb2e6909-2efd-48dc-af9d-50a272439839",
+          "email": "test_user_20260312_194410@example.com",
+          "name": "Test User 20260312_194410",
+          "balance": 100000.0,
+          "created_at": "2026-03-12T19:44:11.249896+00:00"
+        }
+      }
+    },
+    {
+      "test": "User Login",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYjJlNjkwOS0yZWZkLTQ4ZGMtYWY5ZC01MGEyNzI0Mzk4MzkiLCJleHAiOjE3NzM5NDk0NTJ9._jrXG_YqcHxw-Hw0esMdTgUqW-LJsc4hqf7Fhf2KlKY",
+        "token_type": "bearer",
+        "user": {
+          "id": "fb2e6909-2efd-48dc-af9d-50a272439839",
+          "email": "test_user_20260312_194410@example.com",
+          "name": "Test User 20260312_194410",
+          "balance": 100000.0,
+          "created_at": "2026-03-12T19:44:11.249896+00:00"
+        }
+      }
+    },
+    {
+      "test": "Get User Profile",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "id": "fb2e6909-2efd-48dc-af9d-50a272439839",
+        "email": "test_user_20260312_194410@example.com",
+        "name": "Test User 20260312_194410",
+        "balance": 100000.0,
+        "created_at": "2026-03-12T19:44:11.249896+00:00"
+      }
+    },
+    {
+      "test": "Get Stocks",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": [
+        {
+          "symbol": "AAPL",
+          "name": "Apple Inc.",
+          "price": 186.34,
+          "change": 0.54,
+          "change_percent": 0.29,
+          "high": 186.44,
+          "low": 184.69,
+          "open": 185.8,
+          "volume": 2248107,
+          "timestamp": "2026-03-12T19:44:13.377823+00:00"
+        },
+        {
+          "symbol": "MSFT",
+          "name": "Microsoft Corp.",
+          "price": 375.6,
+          "change": -11.22,
+          "change_percent": -2.9,
+          "high": 379.65,
+          "low": 374.53,
+          "open": 386.82,
+          "volume": 17121442,
+          "timestamp": "2026-03-12T19:44:13.377858+00:00"
+        },
+        {
+          "symbol": "GOOGL",
+          "name": "Alphabet Inc.",
+          "price": 140.15,
+          "change": -2.34,
+          "change_percent": -1.64,
+          "high": 141.94,
+          "low": 140.02,
+          "open": 142.49,
+          "volume": 37471710,
+          "timestamp": "2026-03-12T19:44:13.377869+00:00"
+        },
+        {
+          "symbol": "AMZN",
+          "name": "Amazon.com Inc.",
+          "price": 176.89,
+          "change": -0.2,
+          "change_percent": -0.11,
+          "high": 178.91,
+          "low": 175.38,
+          "open": 177.09,
+          "volume": 22100403,
+          "timestamp": "2026-03-12T19:44:13.377878+00:00"
+        },
+        {
+          "symbol": "TSLA",
+          "name": "Tesla Inc.",
+          "price": 250.49,
+          "change": -0.03,
+          "change_percent": -0.01,
+          "high": 251.48,
+          "low": 247.75,
+          "open": 250.52,
+          "volume": 17705776,
+          "timestamp": "2026-03-12T19:44:13.377886+00:00"
+        },
+        {
+          "symbol": "NVDA",
+          "name": "NVIDIA Corp.",
+          "price": 484.57,
+          "change": -12.86,
+          "change_percent": -2.59,
+          "high": 494.11,
+          "low": 484.57,
+          "open": 497.43,
+          "volume": 49905521,
+          "timestamp": "2026-03-12T19:44:13.377894+00:00"
+        },
+        {
+          "symbol": "META",
+          "name": "Meta Platforms Inc.",
+          "price": 508.92,
+          "change": -2.54,
+          "change_percent": -0.5,
+          "high": 511.34,
+          "low": 508.51,
+          "open": 511.46,
+          "volume": 45246587,
+          "timestamp": "2026-03-12T19:44:13.377903+00:00"
+        },
+        {
+          "symbol": "JPM",
+          "name": "JPMorgan Chase",
+          "price": 193.25,
+          "change": -7.56,
+          "change_percent": -3.76,
+          "high": 197.4,
+          "low": 193.25,
+          "open": 200.81,
+          "volume": 12405522,
+          "timestamp": "2026-03-12T19:44:13.377910+00:00"
+        },
+        {
+          "symbol": "V",
+          "name": "Visa Inc.",
+          "price": 271.98,
+          "change": -1.7,
+          "change_percent": -0.62,
+          "high": 276.68,
+          "low": 271.94,
+          "open": 273.68,
+          "volume": 49404150,
+          "timestamp": "2026-03-12T19:44:13.377918+00:00"
+        },
+        {
+          "symbol": "WMT",
+          "name": "Walmart Inc.",
+          "price": 165.52,
+          "change": -1.04,
+          "change_percent": -0.62,
+          "high": 165.52,
+          "low": 164.27,
+          "open": 166.56,
+          "volume": 14475352,
+          "timestamp": "2026-03-12T19:44:13.377927+00:00"
+        }
+      ]
+    },
+    {
+      "test": "Get Single Stock (AAPL)",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "symbol": "AAPL",
+        "name": "Apple Inc.",
+        "price": 186.34,
+        "change": 0.54,
+        "change_percent": 0.29,
+        "high": 186.44,
+        "low": 184.69,
+        "open": 185.8,
+        "volume": 2248107,
+        "timestamp": "2026-03-12T19:44:14.059384+00:00"
+      }
+    },
+    {
+      "test": "Get Stock History (AAPL)",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": [
+        {
+          "time": "19:34",
+          "open": 182.89,
+          "high": 183.77,
+          "low": 182.81,
+          "close": 183.1,
+          "volume": 149415
+        },
+        {
+          "time": "19:35",
+          "open": 183.1,
+          "high": 183.44,
+          "low": 182.69,
+          "close": 183.02,
+          "volume": 259484
+        },
+        {
+          "time": "19:36",
+          "open": 183.02,
+          "high": 184.18,
+          "low": 182.59,
+          "close": 183.32,
+          "volume": 172012
+        },
+        {
+          "time": "19:37",
+          "open": 183.32,
+          "high": 183.64,
+          "low": 182.6,
+          "close": 183.02,
+          "volume": 77582
+        },
+        {
+          "time": "19:38",
+          "open": 183.02,
+          "high": 183.07,
+          "low": 182.09,
+          "close": 182.73,
+          "volume": 58138
+        },
+        {
+          "time": "19:39",
+          "open": 182.73,
+          "high": 183.86,
+          "low": 182.53,
+          "close": 183.33,
+          "volume": 101943
+        },
+        {
+          "time": "19:40",
+          "open": 183.33,
+          "high": 184.0,
+          "low": 182.48,
+          "close": 183.23,
+          "volume": 81823
+        },
+        {
+          "time": "19:41",
+          "open": 183.23,
+          "high": 183.44,
+          "low": 182.51,
+          "close": 183.03,
+          "volume": 488994
+        },
+        {
+          "time": "19:42",
+          "open": 183.03,
+          "high": 183.7,
+          "low": 182.47,
+          "close": 182.6,
+          "volume": 223974
+        },
+        {
+          "time": "19:43",
+          "open": 182.6,
+          "high": 183.39,
+          "low": 182.36,
+          "close": 182.96,
+          "volume": 19050
+        }
+      ]
+    },
+    {
+      "test": "Get Portfolio",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "balance": 100000.0,
+        "portfolio_value": 0.0,
+        "total_value": 100000.0,
+        "total_pnl": 0.0,
+        "total_pnl_percent": 0.0,
+        "positions": []
+      }
+    },
+    {
+      "test": "Get AAPL for Trading",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "symbol": "AAPL",
+        "name": "Apple Inc.",
+        "price": 186.34,
+        "change": 0.54,
+        "change_percent": 0.29,
+        "high": 186.44,
+        "low": 184.69,
+        "open": 185.8,
+        "volume": 2248107,
+        "timestamp": "2026-03-12T19:44:16.290188+00:00"
+      }
+    },
+    {
+      "test": "Buy Stock (10 AAPL)",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "id": "451dd250-f96c-4add-8d60-b13dd2a0ba13",
+        "user_id": "fb2e6909-2efd-48dc-af9d-50a272439839",
+        "symbol": "AAPL",
+        "action": "buy",
+        "quantity": 10,
+        "price": 186.34,
+        "total": 1863.4,
+        "timestamp": "2026-03-12T19:44:16.450607+00:00"
+      }
+    },
+    {
+      "test": "Get Portfolio",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "balance": 98136.6,
+        "portfolio_value": 1863.4,
+        "total_value": 100000.0,
+        "total_pnl": 0.0,
+        "total_pnl_percent": 0.0,
+        "positions": [
+          {
+            "symbol": "AAPL",
+            "name": "Apple Inc.",
+            "quantity": 10,
+            "avg_price": 186.34,
+            "current_price": 186.34,
+            "market_value": 1863.4,
+            "pnl": 0.0,
+            "pnl_percent": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "test": "Get AAPL for Selling",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "symbol": "AAPL",
+        "name": "Apple Inc.",
+        "price": 186.34,
+        "change": 0.54,
+        "change_percent": 0.29,
+        "high": 186.44,
+        "low": 184.69,
+        "open": 185.8,
+        "volume": 2248107,
+        "timestamp": "2026-03-12T19:44:17.692687+00:00"
+      }
+    },
+    {
+      "test": "Sell Stock (5 AAPL)",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "id": "d13c58f9-44a3-48eb-b3a0-df90efbc8542",
+        "user_id": "fb2e6909-2efd-48dc-af9d-50a272439839",
+        "symbol": "AAPL",
+        "action": "sell",
+        "quantity": 5,
+        "price": 186.34,
+        "total": 931.7,
+        "timestamp": "2026-03-12T19:44:17.824530+00:00"
+      }
+    },
+    {
+      "test": "Get Portfolio",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "balance": 99068.3,
+        "portfolio_value": 931.7,
+        "total_value": 100000.0,
+        "total_pnl": 0.0,
+        "total_pnl_percent": 0.0,
+        "positions": [
+          {
+            "symbol": "AAPL",
+            "name": "Apple Inc.",
+            "quantity": 5,
+            "avg_price": 186.34,
+            "current_price": 186.34,
+            "market_value": 931.7,
+            "pnl": 0.0,
+            "pnl_percent": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "test": "Get Trades",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": [
+        {
+          "id": "d13c58f9-44a3-48eb-b3a0-df90efbc8542",
+          "user_id": "fb2e6909-2efd-48dc-af9d-50a272439839",
+          "symbol": "AAPL",
+          "action": "sell",
+          "quantity": 5,
+          "price": 186.34,
+          "total": 931.7,
+          "timestamp": "2026-03-12T19:44:17.824530+00:00"
+        },
+        {
+          "id": "451dd250-f96c-4add-8d60-b13dd2a0ba13",
+          "user_id": "fb2e6909-2efd-48dc-af9d-50a272439839",
+          "symbol": "AAPL",
+          "action": "buy",
+          "quantity": 10,
+          "price": 186.34,
+          "total": 1863.4,
+          "timestamp": "2026-03-12T19:44:16.450607+00:00"
+        }
+      ]
+    },
+    {
+      "test": "Create Journal Entry",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "id": "d4d5c38d-ac83-4161-b54b-8b3a20afa1fc",
+        "user_id": "fb2e6909-2efd-48dc-af9d-50a272439839",
+        "trade_id": null,
+        "symbol": "AAPL",
+        "title": "Test Journal Entry",
+        "content": "This is a test journal entry to verify the API is working.",
+        "sentiment": "bullish",
+        "lessons": "Always test your APIs thoroughly!",
+        "created_at": "2026-03-12T19:44:19.873790+00:00"
+      }
+    },
+    {
+      "test": "Get Journal Entries",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": [
+        {
+          "id": "d4d5c38d-ac83-4161-b54b-8b3a20afa1fc",
+          "user_id": "fb2e6909-2efd-48dc-af9d-50a272439839",
+          "trade_id": null,
+          "symbol": "AAPL",
+          "title": "Test Journal Entry",
+          "content": "This is a test journal entry to verify the API is working.",
+          "sentiment": "bullish",
+          "lessons": "Always test your APIs thoroughly!",
+          "created_at": "2026-03-12T19:44:19.873790+00:00"
+        }
+      ]
+    },
+    {
+      "test": "Delete Journal Entry",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "message": "Entry deleted"
+      }
+    },
+    {
+      "test": "Get Analytics",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "total_trades": 2,
+        "buy_trades": 1,
+        "sell_trades": 1,
+        "total_volume": 2795.1,
+        "avg_trade_size": 1397.55,
+        "by_symbol": {
+          "AAPL": {
+            "trades": 2,
+            "volume": 2795.1000000000004
+          }
+        }
+      }
+    },
+    {
+      "test": "Reset Account",
+      "success": true,
+      "message": "Status: 200",
+      "response_data": {
+        "message": "Account reset successfully",
+        "balance": 100000.0
+      }
+    }
+  ]
+}

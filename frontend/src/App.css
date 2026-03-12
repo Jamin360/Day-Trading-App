@@ -1,34 +1,168 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
-}
+/* App-specific styles */
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
-}
-
-.App-header {
-    background-color: #0f0f10;
+/* Auth page background */
+.auth-bg {
+    background: linear-gradient(135deg, #09090b 0%, #18181b 100%);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+}
+
+/* Trading view layout */
+.trading-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    grid-template-rows: auto 1fr;
+    height: calc(100vh - 64px);
+    gap: 4px;
+}
+
+@media (max-width: 1280px) {
+    .trading-layout {
+        grid-template-columns: 240px 1fr 280px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .trading-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr auto;
+    }
+}
+
+/* Dashboard bento grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Chart container */
+.chart-container {
+    background: #121214;
+    border: 1px solid #27272a;
+    border-radius: 2px;
+}
+
+/* Watchlist item */
+.watchlist-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #27272a;
+    cursor: pointer;
+}
+
+.watchlist-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.watchlist-item.active {
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 2px solid #3b82f6;
+}
+
+/* Order panel */
+.order-panel {
+    background: #121214;
+    border: 1px solid #27272a;
+}
+
+/* Position row */
+.position-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 100px 100px 100px;
     align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+    padding: 12px 16px;
+    border-bottom: 1px solid #27272a;
 }
 
-.App-link {
-    color: #61dafb;
+.position-row:hover {
+    background: rgba(255, 255, 255, 0.02);
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* Trade history row */
+.trade-row {
+    display: grid;
+    grid-template-columns: 100px 80px 80px 100px 100px 150px;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #27272a;
+    font-size: 14px;
+}
+
+.trade-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Journal card */
+.journal-card {
+    background: #121214;
+    border: 1px solid #27272a;
+    padding: 20px;
+    border-radius: 2px;
+}
+
+.journal-card:hover {
+    border-color: #3f3f46;
+}
+
+/* Stats card */
+.stats-card {
+    background: #121214;
+    border: 1px solid #27272a;
+    padding: 20px;
+    border-radius: 2px;
+}
+
+/* Sentiment badge */
+.sentiment-bullish {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.sentiment-bearish {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.sentiment-neutral {
+    background: rgba(161, 161, 170, 0.1);
+    color: #a1a1aa;
+    border: 1px solid rgba(161, 161, 170, 0.2);
+}
+
+/* Pulse animation for live indicator */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Number formatting */
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
 }
