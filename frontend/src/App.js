@@ -85,17 +85,17 @@ const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) throw error;
-    return data.user;
+    // Session is handled by onAuthStateChange listener
   };
 
   const register = async (email, password, name) => {
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -106,7 +106,7 @@ const AuthProvider = ({ children }) => {
     });
 
     if (error) throw error;
-    return data.user;
+    // Session is handled by onAuthStateChange listener
   };
 
   const logout = async () => {
