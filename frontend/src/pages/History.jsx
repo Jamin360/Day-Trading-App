@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth, API } from "@/App";
-import axios from "axios";
+import { useAuth, supabase } from "@/App";
 import { 
   ArrowUpRight,
   ArrowDownRight,
@@ -19,7 +18,7 @@ import {
 } from "@/components/ui/select";
 
 export default function History() {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [trades, setTrades] = useState([]);
   const [filteredTrades, setFilteredTrades] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,10 +28,17 @@ export default function History() {
   useEffect(() => {
     const fetchTrades = async () => {
       try {
-        const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.get(`${API}/trades?limit=100`, { headers });
-        setTrades(response.data);
-        setFilteredTrades(response.data);
+        if (!user?.id) return;
+        const { data, error } = await supabase
+          .from('trades')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('timestamp', { ascending: false })
+          .limit(100);
+        
+        if (error) throw error;
+        setTrades(data || []);
+        setFilteredTrades(data || []);
       } catch (error) {
         console.error("Failed to fetch trades:", error);
       } finally {
@@ -40,7 +46,7 @@ export default function History() {
       }
     };
     fetchTrades();
-  }, [token]);
+  }, [user?.id]);
 
   useEffect(() => {
     let filtered = trades;

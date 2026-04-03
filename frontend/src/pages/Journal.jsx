@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAuth, API } from "@/App";
-import axios from "axios";
+import { useAuth, supabase } from "@/App";
+import { getStockData } from "@/lib/supabase";
 import { 
   Plus,
   BookOpen,
@@ -31,7 +31,7 @@ import {
 import { toast } from "sonner";
 
 export default function Journal() {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [entries, setEntries] = useState([]);
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,9 +47,16 @@ export default function Journal() {
 
   const fetchEntries = async () => {
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      const response = await axios.get(`${API}/journal?limit=50`, { headers });
-      setEntries(response.data);
+      if (!user?.id) return;
+      const { data, error } = await supabase
+        .from('journal')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      
+      if (error) throw error;
+      setEntries(data || []);
     } catch (error) {
       console.error("Failed to fetch journal:", error);
     } finally {
@@ -59,8 +66,8 @@ export default function Journal() {
 
   const fetchStocks = async () => {
     try {
-      const response = await axios.get(`${API}/stocks`);
-      setStocks(response.data);
+      const stocksData = getStockData();
+      setStocks(stocksData);
     } catch (error) {
       console.error("Failed to fetch stocks:", error);
     }
@@ -69,7 +76,7 @@ export default function Journal() {
   useEffect(() => {
     fetchEntries();
     fetchStocks();
-  }, [token]);
+  }, [user?.id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,15 +87,19 @@ export default function Journal() {
 
     setSubmitting(true);
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      await axios.post(`${API}/journal`, {
-        title,
-        content,
-        symbol: symbol || null,
-        sentiment,
-        lessons: lessons || null
-      }, { headers });
+      if (!user?.id) throw new Error('User not authenticated');
+      const { error } = await supabase
+        .from('journal')
+        .insert({
+          user_id: user.id,
+          title,
+          content,
+          symbol: symbol || null,
+          sentiment,
+          lessons: lessons || null
+        });
 
+      if (error) throw error;
       toast.success("Journal entry created");
       setDialogOpen(false);
       resetForm();
@@ -104,8 +115,13 @@ export default function Journal() {
     if (!window.confirm("Delete this journal entry?")) return;
 
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      await axios.delete(`${API}/journal/${entryId}`, { headers });
+      const { error } = await supabase
+        .from('journal')
+        .delete()
+        .eq('id', entryId)
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
       toast.success("Entry deleted");
       fetchEntries();
     } catch (error) {

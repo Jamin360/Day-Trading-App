@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useAuth, API } from "@/App";
+import { useAuth, supabase } from "@/App";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { getStockData } from "@/lib/supabase";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export default function Dashboard() {
-  const { user, token, updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
   const [portfolio, setPortfolio] = useState(null);
   const [stocks, setStocks] = useState([]);
   const [recentTrades, setRecentTrades] = useState([]);
@@ -26,18 +26,72 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      
-      const [portfolioRes, stocksRes, tradesRes] = await Promise.all([
-        axios.get(`${API}/portfolio`, { headers }),
-        axios.get(`${API}/stocks`),
-        axios.get(`${API}/trades?limit=5`, { headers })
-      ]);
+      if (!user?.id) return;
 
-      setPortfolio(portfolioRes.data);
-      setStocks(stocksRes.data);
-      setRecentTrades(tradesRes.data);
-      updateUser({ balance: portfolioRes.data.balance });
+      // Fetch portfolio data
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('balance')
+        .eq('id', user.id)
+        .single();
+
+      const { data: positions } = await supabase
+        .from('positions')
+        .select('*')
+        .eq('user_id', user.id);
+
+      // Get stock data
+      const stocksData = getStockData();
+      setStocks(stocksData);
+
+      // Calculate portfolio with current prices
+      const portfolioPositions = (positions || []).map(pos => {
+        const stock = stocksData.find(s => s.symbol === pos.symbol);
+        const currentPrice = stock?.price || pos.avg_price;
+        const marketValue = currentPrice * pos.quantity;
+        const costBasis = pos.avg_price * pos.quantity;
+        const pnl = marketValue - costBasis;
+        const pnlPercent = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
+
+        return {
+          symbol: pos.symbol,
+          name: pos.name,
+          quantity: pos.quantity,
+          avg_price: parseFloat(pos.avg_price),
+          current_price: currentPrice,
+          market_value: marketValue,
+          pnl: pnl,
+          pnl_percent: pnlPercent
+        };
+      });
+
+      const portfolioValue = portfolioPositions.reduce((sum, p) => sum + p.market_value, 0);
+      const totalCost = portfolioPositions.reduce((sum, p) => sum + (p.avg_price * p.quantity), 0);
+      const totalPnl = portfolioValue - totalCost;
+      const totalPnlPercent = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+      const balance = parseFloat(profile?.balance || 0);
+      const totalValue = balance + portfolioValue;
+
+      setPortfolio({
+        balance,
+        portfolio_value: portfolioValue,
+        total_value: totalValue,
+        total_pnl: totalPnl,
+        total_pnl_percent: totalPnlPercent,
+        positions: portfolioPositions
+      });
+
+      updateUser({ balance });
+
+      // Fetch recent trades
+      const { data: trades } = await supabase
+        .from('trades')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('timestamp', { ascending: false })
+        .limit(5);
+
+      setRecentTrades(trades || []);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
       toast.error("Failed to load dashboard data");
@@ -50,7 +104,7 @@ export default function Dashboard() {
     fetchData();
     const interval = setInterval(fetchData, 10000); // Refresh every 10s
     return () => clearInterval(interval);
-  }, [token]);
+  }, [user?.id]);
 
   const handleReset = async () => {
     if (!window.confirm("Are you sure you want to reset your account? This will delete all trades and positions.")) {
@@ -59,8 +113,14 @@ export default function Dashboard() {
     
     setResetting(true);
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      await axios.post(`${API}/reset`, {}, { headers });
+      // Delete all positions, trades, and journal entries
+      await Promise.all([
+        supabase.from('positions').delete().eq('user_id', user.id),
+        supabase.from('trades').delete().eq('user_id', user.id),
+        supabase.from('journal').delete().eq('user_id', user.id),
+        supabase.from('profiles').update({ balance: 100000.00 }).eq('id', user.id)
+      ]);
+
       toast.success("Account reset successfully!");
       fetchData();
     } catch (error) {

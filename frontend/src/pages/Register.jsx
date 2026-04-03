@@ -31,10 +31,10 @@ export default function Register() {
 
     try {
       await register(email, password, name);
-      toast.success("Account created! Welcome to DayTradingPro");
+      toast.success("Account created! Please check your email to verify your account.");
       navigate("/dashboard");
     } catch (err) {
-      const message = err.response?.data?.detail || "Registration failed. Please try again.";
+      const message = err.message || "Registration failed. Please try again.";
       setError(message);
       toast.error(message);
     } finally {

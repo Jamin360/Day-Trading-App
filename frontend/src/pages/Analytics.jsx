@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAuth, API } from "@/App";
-import axios from "axios";
+import { useAuth, supabase } from "@/App";
+import { getPortfolio } from "@/lib/trading";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -22,7 +22,7 @@ import {
 } from "recharts";
 
 export default function Analytics() {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [analytics, setAnalytics] = useState(null);
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,13 +30,57 @@ export default function Analytics() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const headers = { Authorization: `Bearer ${token}` };
-        const [analyticsRes, portfolioRes] = await Promise.all([
-          axios.get(`${API}/analytics/performance`, { headers }),
-          axios.get(`${API}/portfolio`, { headers })
-        ]);
-        setAnalytics(analyticsRes.data);
-        setPortfolio(portfolioRes.data);
+        if (!user?.id) return;
+        
+        // Fetch all trades
+        const { data: trades, error: tradesError } = await supabase
+          .from('trades')
+          .select('*')
+          .eq('user_id', user.id);
+        
+        if (tradesError) throw tradesError;
+
+        // Fetch portfolio
+        const portfolioData = await getPortfolio(user.id);
+
+        // Calculate analytics
+        const totalTrades = trades?.length || 0;
+        const buyTrades = trades?.filter(t => t.action === 'buy').length || 0;
+        const sellTrades = trades?.filter(t => t.action === 'sell').length || 0;
+        const totalVolume = trades?.reduce((sum, t) => sum + parseFloat(t.total), 0) || 0;
+        const avgTradeSize = totalTrades > 0 ? totalVolume / totalTrades : 0;
+
+        // Group by symbol
+        const bySymbol = {};
+        trades?.forEach(trade => {
+          if (!bySymbol[trade.symbol]) {
+            bySymbol[trade.symbol] = { trades: 0, volume: 0 };
+          }
+          bySymbol[trade.symbol].trades += 1;
+          bySymbol[trade.symbol].volume += parseFloat(trade.total);
+        });
+
+        // Calculate total P&L from portfolio
+        const totalCost = portfolioData.positions.reduce(
+          (sum, p) => sum + (p.avg_price * p.quantity), 0
+        );
+        const totalPnl = portfolioData.portfolio_value - totalCost;
+        const totalPnlPercent = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+
+        setAnalytics({
+          total_trades: totalTrades,
+          buy_trades: buyTrades,
+          sell_trades: sellTrades,
+          total_volume: totalVolume,
+          avg_trade_size: avgTradeSize,
+          by_symbol: bySymbol
+        });
+
+        setPortfolio({
+          ...portfolioData,
+          total_pnl: totalPnl,
+          total_pnl_percent: totalPnlPercent
+        });
       } catch (error) {
         console.error("Failed to fetch analytics:", error);
       } finally {
@@ -44,7 +88,7 @@ export default function Analytics() {
       }
     };
     fetchData();
-  }, [token]);
+  }, [user?.id]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useAuth, API } from "@/App";
+import { useAuth, supabase } from "@/App";
 import { useSearchParams } from "react-router-dom";
-import axios from "axios";
+import { getStockData, generatePriceHistory } from "@/lib/supabase";
+import { executeTrade, getPortfolio } from "@/lib/trading";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -27,7 +28,7 @@ import {
 } from "recharts";
 
 export default function Trading() {
-  const { token, updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
   const [searchParams] = useSearchParams();
   
   const [stocks, setStocks] = useState([]);
@@ -43,21 +44,21 @@ export default function Trading() {
 
   const fetchStocks = async () => {
     try {
-      const response = await axios.get(`${API}/stocks`);
-      setStocks(response.data);
+      const stocksData = getStockData();
+      setStocks(stocksData);
       
       // Select initial stock
       const symbolParam = searchParams.get("symbol");
       const initialStock = symbolParam 
-        ? response.data.find(s => s.symbol === symbolParam) || response.data[0]
-        : response.data[0];
+        ? stocksData.find(s => s.symbol === symbolParam) || stocksData[0]
+        : stocksData[0];
       
       if (initialStock && (!selectedStock || selectedStock.symbol !== initialStock.symbol)) {
         setSelectedStock(initialStock);
         fetchPriceHistory(initialStock.symbol);
       } else if (selectedStock) {
         // Update selected stock price
-        const updated = response.data.find(s => s.symbol === selectedStock.symbol);
+        const updated = stocksData.find(s => s.symbol === selectedStock.symbol);
         if (updated) setSelectedStock(updated);
       }
     } catch (error) {
@@ -67,8 +68,8 @@ export default function Trading() {
 
   const fetchPriceHistory = async (symbol) => {
     try {
-      const response = await axios.get(`${API}/stocks/${symbol}/history?minutes=60`);
-      setPriceHistory(response.data);
+      const history = generatePriceHistory(symbol, 60);
+      setPriceHistory(history);
     } catch (error) {
       console.error("Failed to fetch price history:", error);
     }
@@ -76,11 +77,11 @@ export default function Trading() {
 
   const fetchPortfolio = async () => {
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      const response = await axios.get(`${API}/portfolio`, { headers });
-      setPositions(response.data.positions);
-      setBalance(response.data.balance);
-      updateUser({ balance: response.data.balance });
+      if (!user?.id) return;
+      const portfolio = await getPortfolio(user.id);
+      setPositions(portfolio.positions);
+      setBalance(portfolio.balance);
+      updateUser({ balance: portfolio.balance });
     } catch (error) {
       console.error("Failed to fetch portfolio:", error);
     }
@@ -101,7 +102,7 @@ export default function Trading() {
       clearInterval(stockInterval);
       clearInterval(portfolioInterval);
     };
-  }, [token]);
+  }, [user?.id]);
 
   const handleStockSelect = (stock) => {
     setSelectedStock(stock);
@@ -110,23 +111,23 @@ export default function Trading() {
   };
 
   const handleTrade = async () => {
-    if (!selectedStock || quantity <= 0) return;
+    if (!selectedStock || quantity <= 0 || !user?.id) return;
 
     setExecuting(true);
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      await axios.post(`${API}/trades`, {
-        symbol: selectedStock.symbol,
-        action: orderType,
-        quantity: quantity,
-        price: selectedStock.price
-      }, { headers });
+      await executeTrade(
+        user.id,
+        selectedStock.symbol,
+        orderType,
+        quantity,
+        selectedStock.price
+      );
 
       toast.success(`${orderType === 'buy' ? 'Bought' : 'Sold'} ${quantity} shares of ${selectedStock.symbol}`);
       fetchPortfolio();
       setQuantity(1);
     } catch (error) {
-      const message = error.response?.data?.detail || `Failed to ${orderType}`;
+      const message = error.message || `Failed to ${orderType}`;
       toast.error(message);
     } finally {
       setExecuting(false);

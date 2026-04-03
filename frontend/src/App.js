@@ -1,8 +1,8 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import axios from "axios";
 import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/lib/supabase";
 
 // Pages
 import Login from "@/pages/Login";
@@ -16,8 +16,8 @@ import Analytics from "@/pages/Analytics";
 // Components
 import { Navbar } from "@/components/Navbar";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-export const API = `${BACKEND_URL}/api`;
+// Export supabase for use in pages
+export { supabase };
 
 // Auth Context
 const AuthContext = createContext(null);
@@ -32,50 +32,87 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initAuth = async () => {
-      if (token) {
-        try {
-          const response = await axios.get(`${API}/auth/me`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          setUser(response.data);
-        } catch (error) {
-          console.error("Auth init failed:", error);
-          localStorage.removeItem("token");
-          setToken(null);
-        }
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      } else {
+        setLoading(false);
       }
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchUserProfile = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+      setUser({
+        id: data.id,
+        email: data.email,
+        name: data.name,
+        balance: parseFloat(data.balance)
+      });
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    } finally {
       setLoading(false);
-    };
-    initAuth();
-  }, [token]);
+    }
+  };
 
   const login = async (email, password) => {
-    const response = await axios.post(`${API}/auth/login`, { email, password });
-    const { access_token, user: userData } = response.data;
-    localStorage.setItem("token", access_token);
-    setToken(access_token);
-    setUser(userData);
-    return userData;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) throw error;
+    return data.user;
   };
 
   const register = async (email, password, name) => {
-    const response = await axios.post(`${API}/auth/register`, { email, password, name });
-    const { access_token, user: userData } = response.data;
-    localStorage.setItem("token", access_token);
-    setToken(access_token);
-    setUser(userData);
-    return userData;
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: name,
+        },
+      },
+    });
+
+    if (error) throw error;
+    return data.user;
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
+    setSession(null);
   };
 
   const updateUser = (updates) => {
@@ -84,13 +121,13 @@ const AuthProvider = ({ children }) => {
 
   const value = {
     user,
-    token,
+    session,
     loading,
     login,
     register,
     logout,
     updateUser,
-    isAuthenticated: !!user
+    isAuthenticated: !!session
   };
 
   return (
