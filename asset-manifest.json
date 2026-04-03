@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Day-Trading-App/static/css/main.d8b7fc39.css",
-    "main.js": "/Day-Trading-App/static/js/main.b9eb9542.js",
+    "main.js": "/Day-Trading-App/static/js/main.924b1529.js",
     "index.html": "/Day-Trading-App/index.html",
     "main.d8b7fc39.css.map": "/Day-Trading-App/static/css/main.d8b7fc39.css.map",
-    "main.b9eb9542.js.map": "/Day-Trading-App/static/js/main.b9eb9542.js.map"
+    "main.924b1529.js.map": "/Day-Trading-App/static/js/main.924b1529.js.map"
   },
   "entrypoints": [
     "static/css/main.d8b7fc39.css",
-    "static/js/main.b9eb9542.js"
+    "static/js/main.924b1529.js"
   ]
 }
