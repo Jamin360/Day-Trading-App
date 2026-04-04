@@ -1,7 +1,8 @@
 [build]
   base = "frontend"
-  command = "CI=false PUBLIC_URL='' npm run build"
-  publish = "frontend/build"
+  command = "CI=false npm run build"
+  publish = "build"
 
-[context.production]
-  environment = { SECRETS_SCAN_OMIT_KEYS = "REACT_APP_SUPABASE_URL,REACT_APP_SUPABASE_ANON_KEY" }
+[context.production.environment]
+  SECRETS_SCAN_OMIT_KEYS = "REACT_APP_SUPABASE_URL,REACT_APP_SUPABASE_ANON_KEY"
+
