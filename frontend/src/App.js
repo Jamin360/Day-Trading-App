@@ -49,20 +49,11 @@ const AuthProvider = ({ children }) => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔔 [AUTH LISTENER] Event triggered:', event);
-      console.log('🔔 [AUTH LISTENER] Session:', session?.user?.email);
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      
-      // Don't fetch profile on SIGNED_UP event - let register() handle it
-      if (event === 'SIGNED_IN' && session?.user) {
-        console.log('🔔 [AUTH LISTENER] SIGNED_IN - fetching profile');
-        fetchUserProfile(session.user.id);
-      } else if (session?.user && event !== 'SIGNED_UP') {
-        console.log('🔔 [AUTH LISTENER]', event, '- fetching profile');
+      if (session?.user) {
         fetchUserProfile(session.user.id);
       } else {
-        console.log('🔔 [AUTH LISTENER] Clearing user state');
         setUser(null);
         setLoading(false);
       }
@@ -73,30 +64,22 @@ const AuthProvider = ({ children }) => {
 
   const fetchUserProfile = async (userId) => {
     try {
-      console.log('👤 [FETCH PROFILE] Fetching profile for user ID:', userId);
-      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      console.log('👤 [FETCH PROFILE] Response data:', data);
-      console.log('👤 [FETCH PROFILE] Response error:', error);
-      
       if (error) throw error;
       
-      const userData = {
+      setUser({
         id: data.id,
         email: data.email,
         name: data.name,
         balance: parseFloat(data.balance)
-      };
-      
-      console.log('👤 [FETCH PROFILE] Setting user state:', userData);
-      setUser(userData);
+      });
     } catch (error) {
-      console.error('👤 [FETCH PROFILE] Error:', error);
+      console.error('Error fetching user profile:', error);
     } finally {
       setLoading(false);
     }
@@ -110,73 +93,38 @@ const AuthProvider = ({ children }) => {
   };
 
   const register = async (email, password, name) => {
-    console.log('📝 [REGISTER] Starting registration for:', email);
-    
-    try {
-      console.log('📝 [REGISTER] Calling supabase.auth.signUp...');
-      
-      // Sign up the user with email confirmation disabled
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { name },
-          emailRedirectTo: window.location.origin + '/Day-Trading-App/dashboard',
-        },
-      });
-      
-      console.log('📝 [REGISTER] signUp returned - data:', data?.user?.email);
-      console.log('📝 [REGISTER] signUp returned - user confirmed:', data?.user?.confirmed_at);
-      console.log('📝 [REGISTER] signUp returned - error:', error);
-      
-      if (error) {
-        console.error('📝 [REGISTER] Error during signUp:', error.message);
-        throw new Error(error.message);
+    // Step 1: Sign up the user
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name }
       }
+    });
+    
+    // Step 2: If signup failed, throw error
+    if (error) {
+      throw new Error(error.message);
+    }
 
-      // Manually create profile after signup completes
-      if (data?.user) {
-        console.log('📝 [REGISTER] User created, waiting 100ms before profile insert...');
-        // Small delay to ensure signup is fully processed
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        console.log('📝 [REGISTER] Inserting/updating profile in database...');
-        const profileData = {
+    // Step 3: Insert profile with $100k balance
+    if (data?.user) {
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
           id: data.user.id,
           email: data.user.email,
           name: name,
           balance: 100000.00
-        };
-        console.log('📝 [REGISTER] Profile data to upsert:', profileData);
-        
-        // Use upsert to handle case where trigger already created profile
-        const { data: insertedProfile, error: profileError } = await supabase
-          .from('profiles')
-          .upsert(profileData, { 
-            onConflict: 'id'
-          })
-          .select()
-          .single();
-        
-        console.log('📝 [REGISTER] Upserted profile:', insertedProfile);
-        
-        if (profileError) {
-          console.log('📝 [REGISTER] Profile insert error:', profileError);
-          if (!profileError.message.includes('duplicate')) {
-            console.error('📝 [REGISTER] Non-duplicate profile error:', profileError);
-          } else {
-            console.log('📝 [REGISTER] Profile already exists (duplicate key)');
-          }
-        } else {
-          console.log('📝 [REGISTER] Profile created successfully!');
-        }
-      }
+        });
       
-      console.log('📝 [REGISTER] Registration complete!');
-    } catch (err) {
-      console.error('📝 [REGISTER] Exception caught:', err);
-      throw err;
+      // Log profile errors but don't block user
+      if (profileError) {
+        console.error('Profile creation error:', profileError);
+      }
     }
+    
+    return data;
   };
 
   const logout = async () => {
