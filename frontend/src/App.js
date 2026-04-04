@@ -212,8 +212,11 @@ const AppLayout = ({ children }) => {
 };
 
 function App() {
+  // Use PUBLIC_URL for basename - works for both GitHub Pages and Netlify
+  const basename = process.env.PUBLIC_URL || '';
+  
   return (
-    <BrowserRouter basename="/Day-Trading-App">
+    <BrowserRouter basename={basename}>
       <AuthProvider>
         <Routes>
           {/* Public Routes */}

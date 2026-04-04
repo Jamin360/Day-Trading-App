@@ -1,6 +1,6 @@
 [build]
   base = "frontend"
-  command = "CI=false npm run build"
+  command = "CI=false PUBLIC_URL='' npm run build"
   publish = "frontend/build"
 
 [context.production]
