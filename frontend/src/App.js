@@ -85,13 +85,8 @@ const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    // Session is handled by onAuthStateChange listener
   };
 
   const register = async (email, password, name) => {
@@ -99,14 +94,10 @@ const AuthProvider = ({ children }) => {
       email,
       password,
       options: {
-        data: {
-          name: name,
-        },
+        data: { name },
       },
     });
-
     if (error) throw error;
-    // Session is handled by onAuthStateChange listener
   };
 
   const logout = async () => {
