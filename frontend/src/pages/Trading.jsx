@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth, supabase } from "@/App";
 import { useSearchParams } from "react-router-dom";
 import { getStockData, generatePriceHistory } from "@/lib/supabase";
@@ -33,12 +33,17 @@ export default function Trading() {
   
   const [stocks, setStocks] = useState([]);
   const [selectedSymbol, setSelectedSymbol] = useState(null);
-  const [priceHistory, setPriceHistory] = useState([]);
   const [positions, setPositions] = useState([]);
   const [balance, setBalance] = useState(0);
 
+  // Store chart history for all stocks
+  const chartHistories = useRef({});
+
   // Derive selected stock from stocks array (never stale)
   const selected = stocks.find(s => s.symbol === selectedSymbol) ?? stocks[0];
+  
+  // Derive chart data for selected stock
+  const chartData = chartHistories.current[selectedSymbol] || [];
   
   const [orderType, setOrderType] = useState("buy");
   const [quantity, setQuantity] = useState(1);
@@ -48,19 +53,37 @@ export default function Trading() {
   const fetchStocks = async () => {
     try {
       const stocksData = getStockData();
+      
       // Use functional updater to avoid stale closure
-      setStocks(prev => stocksData);
+      setStocks(prev => {
+        // Append new data point to every stock's chart history
+        stocksData.forEach(stock => {
+          if (!chartHistories.current[stock.symbol]) {
+            chartHistories.current[stock.symbol] = [];
+          }
+          
+          const now = new Date();
+          const timeStr = now.toTimeString().slice(0, 5);
+          
+          chartHistories.current[stock.symbol].push({
+            time: timeStr,
+            open: stock.open,
+            high: stock.high,
+            low: stock.low,
+            close: stock.price,
+            volume: stock.volume
+          });
+          
+          // Keep only last 60 minutes of data
+          if (chartHistories.current[stock.symbol].length > 60) {
+            chartHistories.current[stock.symbol].shift();
+          }
+        });
+        
+        return stocksData;
+      });
     } catch (error) {
       console.error("Failed to fetch stocks:", error);
-    }
-  };
-
-  const fetchPriceHistory = async (symbol) => {
-    try {
-      const history = generatePriceHistory(symbol, 60);
-      setPriceHistory(history);
-    } catch (error) {
-      console.error("Failed to fetch price history:", error);
     }
   };
 
@@ -78,13 +101,18 @@ export default function Trading() {
 
   useEffect(() => {
     const init = async () => {
+      // Initialize chart histories with historical data for all stocks
+      const stocksData = getStockData();
+      stocksData.forEach(stock => {
+        chartHistories.current[stock.symbol] = generatePriceHistory(stock.symbol, 60);
+      });
+      
       await Promise.all([fetchStocks(), fetchPortfolio()]);
       
       // Set initial selected stock from URL param or first stock
       const symbolParam = searchParams.get("symbol");
       if (symbolParam) {
         setSelectedSymbol(symbolParam);
-        fetchPriceHistory(symbolParam);
       }
       
       setLoading(false);
@@ -103,7 +131,6 @@ export default function Trading() {
 
   const handleStockSelect = (stock) => {
     setSelectedSymbol(stock.symbol);
-    fetchPriceHistory(stock.symbol);
     setQuantity(1);
   };
 
@@ -280,7 +307,7 @@ export default function Trading() {
             {/* Chart */}
             <div className="flex-1 p-4" data-testid="price-chart">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={priceHistory} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <LineChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                   <XAxis 
                     dataKey="time" 
                     stroke="#52525b" 
@@ -298,7 +325,7 @@ export default function Trading() {
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <ReferenceLine 
-                    y={priceHistory[0]?.open} 
+                    y={chartData[0]?.open} 
                     stroke="#3f3f46" 
                     strokeDasharray="3 3"
                   />
