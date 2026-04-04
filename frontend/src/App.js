@@ -73,21 +73,30 @@ const AuthProvider = ({ children }) => {
 
   const fetchUserProfile = async (userId) => {
     try {
+      console.log('👤 [FETCH PROFILE] Fetching profile for user ID:', userId);
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
+      console.log('👤 [FETCH PROFILE] Response data:', data);
+      console.log('👤 [FETCH PROFILE] Response error:', error);
+      
       if (error) throw error;
-      setUser({
+      
+      const userData = {
         id: data.id,
         email: data.email,
         name: data.name,
         balance: parseFloat(data.balance)
-      });
+      };
+      
+      console.log('👤 [FETCH PROFILE] Setting user state:', userData);
+      setUser(userData);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('👤 [FETCH PROFILE] Error:', error);
     } finally {
       setLoading(false);
     }
@@ -132,14 +141,21 @@ const AuthProvider = ({ children }) => {
         await new Promise(resolve => setTimeout(resolve, 100));
         
         console.log('📝 [REGISTER] Inserting profile into database...');
-        const { error: profileError } = await supabase
+        const profileData = {
+          id: data.user.id,
+          email: data.user.email,
+          name: name,
+          balance: 100000
+        };
+        console.log('📝 [REGISTER] Profile data to insert:', profileData);
+        
+        const { data: insertedProfile, error: profileError } = await supabase
           .from('profiles')
-          .insert({
-            id: data.user.id,
-            email: data.user.email,
-            name: name,
-            balance: 100000.00
-          });
+          .insert(profileData)
+          .select()
+          .single();
+        
+        console.log('📝 [REGISTER] Inserted profile:', insertedProfile);
         
         if (profileError) {
           console.log('📝 [REGISTER] Profile insert error:', profileError);
