@@ -148,9 +148,9 @@ export default function Journal() {
 
   const getSentimentIcon = (s) => {
     switch(s) {
-      case 'bullish': return <TrendingUp className="w-4 h-4 text-emerald-500" />;
-      case 'bearish': return <TrendingDown className="w-4 h-4 text-rose-500" />;
-      default: return <Minus className="w-4 h-4 text-zinc-500" />;
+      case 'bullish': return <TrendingUp className="w-4 h-4 text-[#4E8A62]" />;
+      case 'bearish': return <TrendingDown className="w-4 h-4 text-[#B85A5A]" />;
+      default: return <Minus className="w-4 h-4 text-[#8A8B8F]" />;
     }
   };
 
@@ -165,7 +165,7 @@ export default function Journal() {
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
-        <div className="text-zinc-400">Loading journal...</div>
+        <div className="text-[#8A8B8F]">Loading journal...</div>
       </div>
     );
   }
@@ -175,42 +175,42 @@ export default function Journal() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-heading font-bold text-2xl text-white">Trading Journal</h1>
-          <p className="text-zinc-500 text-sm mt-1">Document your trades and learn from them</p>
+          <h1 className="font-heading font-bold text-2xl text-[#1C2333]">Trading Journal</h1>
+          <p className="text-[#8A8B8F] text-sm mt-1">Document your trades and learn from them</p>
         </div>
         
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700" data-testid="new-entry-btn">
+            <Button className="bg-[#3B6FA0] hover:bg-[#2A4F72]" data-testid="new-entry-btn">
               <Plus className="w-4 h-4 mr-2" />
               New Entry
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#121214] border-zinc-800 text-white max-w-lg">
+          <DialogContent className="bg-[#E8E6E1] border-[rgba(28,35,51,0.15)] text-[#1C2333] max-w-lg">
             <DialogHeader>
               <DialogTitle className="font-heading text-xl">New Journal Entry</DialogTitle>
             </DialogHeader>
             
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label className="text-zinc-400 text-sm">Title *</Label>
+                <Label className="text-[#8A8B8F] text-sm">Title *</Label>
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Learned about support levels"
-                  className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600"
+                  className="bg-[#DEDCD7] border-[rgba(28,35,51,0.1)] text-[#1C2333] placeholder:text-[#8A8B8F]"
                   data-testid="entry-title-input"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-zinc-400 text-sm">Related Symbol</Label>
+                  <Label className="text-[#8A8B8F] text-sm">Related Symbol</Label>
                   <Select value={symbol} onValueChange={setSymbol}>
-                    <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white" data-testid="entry-symbol-select">
+                    <SelectTrigger className="bg-[#DEDCD7] border-[rgba(28,35,51,0.1)] text-[#1C2333]" data-testid="entry-symbol-select">
                       <SelectValue placeholder="Select stock" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#18181b] border-zinc-800">
+                    <SelectContent className="bg-[#E8E6E1] border-[rgba(28,35,51,0.15)]">
                       <SelectItem value="">None</SelectItem>
                       {stocks.map(s => (
                         <SelectItem key={s.symbol} value={s.symbol}>{s.symbol}</SelectItem>
@@ -220,27 +220,27 @@ export default function Journal() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-zinc-400 text-sm">Market Sentiment</Label>
+                  <Label className="text-[#8A8B8F] text-sm">Market Sentiment</Label>
                   <Select value={sentiment} onValueChange={setSentiment}>
-                    <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white" data-testid="entry-sentiment-select">
+                    <SelectTrigger className="bg-[#DEDCD7] border-[rgba(28,35,51,0.1)] text-[#1C2333]" data-testid="entry-sentiment-select">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#18181b] border-zinc-800">
+                    <SelectContent className="bg-[#E8E6E1] border-[rgba(28,35,51,0.15)]">
                       <SelectItem value="bullish">
                         <span className="flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4 text-emerald-500" />
+                          <TrendingUp className="w-4 h-4 text-[#4E8A62]" />
                           Bullish
                         </span>
                       </SelectItem>
                       <SelectItem value="bearish">
                         <span className="flex items-center gap-2">
-                          <TrendingDown className="w-4 h-4 text-rose-500" />
+                          <TrendingDown className="w-4 h-4 text-[#B85A5A]" />
                           Bearish
                         </span>
                       </SelectItem>
                       <SelectItem value="neutral">
                         <span className="flex items-center gap-2">
-                          <Minus className="w-4 h-4 text-zinc-500" />
+                          <Minus className="w-4 h-4 text-[#8A8B8F]" />
                           Neutral
                         </span>
                       </SelectItem>
@@ -250,25 +250,25 @@ export default function Journal() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-zinc-400 text-sm">Notes *</Label>
+                <Label className="text-[#8A8B8F] text-sm">Notes *</Label>
                 <Textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="What happened? What did you observe?"
                   rows={4}
-                  className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 resize-none"
+                  className="bg-[#DEDCD7] border-[rgba(28,35,51,0.1)] text-[#1C2333] placeholder:text-[#8A8B8F] resize-none"
                   data-testid="entry-content-input"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-zinc-400 text-sm">Lessons Learned</Label>
+                <Label className="text-[#8A8B8F] text-sm">Lessons Learned</Label>
                 <Textarea
                   value={lessons}
                   onChange={(e) => setLessons(e.target.value)}
                   placeholder="What will you do differently next time?"
                   rows={2}
-                  className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 resize-none"
+                  className="bg-[#DEDCD7] border-[rgba(28,35,51,0.1)] text-[#1C2333] placeholder:text-[#8A8B8F] resize-none"
                   data-testid="entry-lessons-input"
                 />
               </div>
@@ -278,14 +278,14 @@ export default function Journal() {
                   type="button" 
                   variant="outline" 
                   onClick={() => setDialogOpen(false)}
-                  className="border-zinc-800 text-zinc-400"
+                  className="border-[rgba(28,35,51,0.15)] text-[#1C2333]"
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
                   disabled={submitting}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-[#3B6FA0] hover:bg-[#2A4F72]"
                   data-testid="save-entry-btn"
                 >
                   {submitting ? "Saving..." : "Save Entry"}
@@ -308,9 +308,9 @@ export default function Journal() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-heading font-semibold text-white">{entry.title}</h3>
+                    <h3 className="font-heading font-semibold text-[#1C2333]">{entry.title}</h3>
                     {entry.symbol && (
-                      <span className="px-2 py-0.5 text-xs font-mono bg-blue-500/10 text-blue-500 rounded-sm">
+                      <span className="px-2 py-0.5 text-xs font-mono bg-[rgba(59,111,160,0.12)] text-[#3B6FA0] rounded-sm">
                         {entry.symbol}
                       </span>
                     )}
@@ -320,18 +320,18 @@ export default function Journal() {
                     </span>
                   </div>
                   
-                  <p className="text-zinc-400 text-sm whitespace-pre-wrap">{entry.content}</p>
+                  <p className="text-[#8A8B8F] text-sm whitespace-pre-wrap">{entry.content}</p>
                   
                   {entry.lessons && (
-                    <div className="mt-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-sm">
-                      <div className="text-xs uppercase tracking-wider text-zinc-500 mb-1">Lessons Learned</div>
-                      <p className="text-zinc-300 text-sm">{entry.lessons}</p>
+                    <div className="mt-3 p-3 bg-[#DEDCD7] border border-[rgba(28,35,51,0.1)] rounded-sm">
+                      <div className="text-xs uppercase tracking-wider text-[#8A8B8F] mb-1">Lessons Learned</div>
+                      <p className="text-[#1C2333] text-sm">{entry.lessons}</p>
                     </div>
                   )}
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
-                  <div className="flex items-center gap-1 text-xs text-zinc-500">
+                  <div className="flex items-center gap-1 text-xs text-[#8A8B8F]">
                     <Calendar className="w-3 h-3" />
                     {formatDate(entry.created_at)}
                   </div>
@@ -339,7 +339,7 @@ export default function Journal() {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDelete(entry.id)}
-                    className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-rose-500 h-8 w-8"
+                    className="opacity-0 group-hover:opacity-100 text-[#8A8B8F] hover:text-[#B85A5A] h-8 w-8"
                     data-testid={`delete-entry-${entry.id}`}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -350,15 +350,15 @@ export default function Journal() {
           ))}
         </div>
       ) : (
-        <div className="bg-[#121214] border border-zinc-800 rounded-sm p-12 text-center">
-          <BookOpen className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-          <h3 className="font-heading font-semibold text-white mb-2">No journal entries yet</h3>
-          <p className="text-zinc-500 text-sm mb-4">
+        <div className="bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] rounded-sm p-12 text-center">
+          <BookOpen className="w-12 h-12 text-[#8A8B8F] mx-auto mb-4" />
+          <h3 className="font-heading font-semibold text-[#1C2333] mb-2">No journal entries yet</h3>
+          <p className="text-[#8A8B8F] text-sm mb-4">
             Start documenting your trades to track your learning journey
           </p>
           <Button 
             onClick={() => setDialogOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-[#3B6FA0] hover:bg-[#2A4F72]"
           >
             <Plus className="w-4 h-4 mr-2" />
             Create First Entry

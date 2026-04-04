@@ -224,17 +224,17 @@ export default function Trading() {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-[#18181b] border border-zinc-700 p-3 rounded-sm text-xs">
-          <div className="font-mono text-zinc-400 mb-1">{data.time}</div>
+        <div className="bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] p-3 rounded-sm text-xs shadow-lg">
+          <div className="font-mono text-[#8A8B8F] mb-1">{data.time}</div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-            <span className="text-zinc-500">Open:</span>
-            <span className="font-mono text-white">{formatCurrency(data.open)}</span>
-            <span className="text-zinc-500">High:</span>
-            <span className="font-mono text-emerald-500">{formatCurrency(data.high)}</span>
-            <span className="text-zinc-500">Low:</span>
-            <span className="font-mono text-rose-500">{formatCurrency(data.low)}</span>
-            <span className="text-zinc-500">Close:</span>
-            <span className="font-mono text-white">{formatCurrency(data.close)}</span>
+            <span className="text-[#8A8B8F]">Open:</span>
+            <span className="font-mono text-[#1C2333]">{formatCurrency(data.open)}</span>
+            <span className="text-[#8A8B8F]">High:</span>
+            <span className="font-mono text-[#4E8A62]">{formatCurrency(data.high)}</span>
+            <span className="text-[#8A8B8F]">Low:</span>
+            <span className="font-mono text-[#B85A5A]">{formatCurrency(data.low)}</span>
+            <span className="text-[#8A8B8F]">Close:</span>
+            <span className="font-mono text-[#1C2333]">{formatCurrency(data.close)}</span>
           </div>
         </div>
       );
@@ -251,11 +251,11 @@ export default function Trading() {
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] grid grid-cols-1 lg:grid-cols-12 gap-1 p-1 bg-[#09090b]" data-testid="trading-page">
+    <div className="h-[calc(100vh-64px)] grid grid-cols-1 lg:grid-cols-12 gap-1 p-1 bg-[#F0EEE9]" data-testid="trading-page">
       {/* Watchlist / Positions - Left Column */}
-      <div className="lg:col-span-3 xl:col-span-2 bg-[#121214] border border-zinc-800 rounded-sm overflow-hidden flex flex-col">
+      <div className="lg:col-span-3 xl:col-span-2 bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] rounded-sm overflow-hidden flex flex-col">
         <Tabs defaultValue="watchlist" className="flex flex-col h-full">
-          <TabsList className="w-full grid grid-cols-2 bg-[#09090b] rounded-none p-1">
+          <TabsList className="w-full grid grid-cols-2 bg-[#DEDCD7] rounded-none p-1">
             <TabsTrigger value="watchlist" className="text-xs">Watchlist</TabsTrigger>
             <TabsTrigger value="positions" className="text-xs">Positions</TabsTrigger>
           </TabsList>
@@ -269,20 +269,20 @@ export default function Trading() {
                   onClick={() => handleStockSelect(stock)}
                   className={`p-3 cursor-pointer transition-colors duration-150 ${
                     selected?.symbol === stock.symbol 
-                      ? 'bg-blue-500/10 border-l-2 border-l-blue-500' 
-                      : 'hover:bg-white/[0.02]'
+                      ? 'bg-[#3B6FA0]/10 border-l-2 border-l-[#3B6FA0]' 
+                      : 'hover:bg-[#DEDCD7]'
                   }`}
                   data-testid={`watchlist-${stock.symbol}`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium text-white text-sm">{stock.symbol}</div>
-                      <div className="text-xs text-zinc-500 truncate max-w-[100px]">{stock.name}</div>
+                      <div className="font-medium text-[#1C2333] text-sm">{stock.symbol}</div>
+                      <div className="text-xs text-[#8A8B8F] truncate max-w-[100px]">{stock.name}</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono text-sm text-white">{formatCurrency(stock.price)}</div>
+                      <div className="font-mono text-sm text-[#1C2333]">{formatCurrency(stock.price)}</div>
                       <div className={`font-mono text-xs flex items-center justify-end gap-0.5 ${
-                        stock.change >= 0 ? 'text-emerald-500' : 'text-rose-500'
+                        stock.change >= 0 ? 'text-[#4E8A62]' : 'text-[#B85A5A]'
                       }`}>
                         {stock.change >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                         {formatPercent(stock.change_percent)}
@@ -297,30 +297,30 @@ export default function Trading() {
       </div>
 
       {/* Chart - Center Column */}
-      <div className="lg:col-span-6 xl:col-span-7 bg-[#121214] border border-zinc-800 rounded-sm flex flex-col">
+      <div className="lg:col-span-6 xl:col-span-7 bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] rounded-sm flex flex-col">
         {selected && (
           <>
             {/* Chart Header */}
-            <div className="p-4 border-b border-zinc-800">
+            <div className="p-4 border-b border-[rgba(28,35,51,0.1)]">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-3">
-                    <h2 className="font-heading font-bold text-xl text-white">{selected.symbol}</h2>
+                    <h2 className="font-heading font-bold text-xl text-[#1C2333]">{selected.symbol}</h2>
                     <span className={`px-2 py-0.5 text-xs font-medium rounded-sm ${
                       selected.change >= 0 
-                        ? 'bg-emerald-500/10 text-emerald-500' 
-                        : 'bg-rose-500/10 text-rose-500'
+                        ? 'bg-[rgba(78,138,98,0.12)] text-[#4E8A62]' 
+                        : 'bg-[rgba(184,90,90,0.12)] text-[#B85A5A]'
                     }`}>
                       {selected.change >= 0 ? <TrendingUp className="w-3 h-3 inline mr-1" /> : <TrendingDown className="w-3 h-3 inline mr-1" />}
                       {formatPercent(selected.change_percent)}
                     </span>
                   </div>
-                  <div className="text-sm text-zinc-500">{selected.name}</div>
+                  <div className="text-sm text-[#8A8B8F]">{selected.name}</div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono text-2xl font-bold text-white">{formatCurrency(selected.price)}</div>
+                  <div className="font-mono text-2xl font-bold text-[#1C2333]">{formatCurrency(selected.price)}</div>
                   <div className={`font-mono text-sm ${
-                    selected.change >= 0 ? 'text-emerald-500' : 'text-rose-500'
+                    selected.change >= 0 ? 'text-[#4E8A62]' : 'text-[#B85A5A]'
                   }`}>
                     {selected.change >= 0 ? '+' : ''}{formatCurrency(selected.change)}
                   </div>
@@ -330,20 +330,20 @@ export default function Trading() {
               {/* Stock Stats */}
               <div className="mt-4 grid grid-cols-4 gap-4 text-xs">
                 <div>
-                  <span className="text-zinc-500">Open</span>
-                  <div className="font-mono text-zinc-300">{formatCurrency(selected.open)}</div>
+                  <span className="text-[#8A8B8F]">Open</span>
+                  <div className="font-mono text-[#1C2333]">{formatCurrency(selected.open)}</div>
                 </div>
                 <div>
-                  <span className="text-zinc-500">High</span>
-                  <div className="font-mono text-emerald-500">{formatCurrency(selected.high)}</div>
+                  <span className="text-[#8A8B8F]">High</span>
+                  <div className="font-mono text-[#4E8A62]">{formatCurrency(selected.high)}</div>
                 </div>
                 <div>
-                  <span className="text-zinc-500">Low</span>
-                  <div className="font-mono text-rose-500">{formatCurrency(selected.low)}</div>
+                  <span className="text-[#8A8B8F]">Low</span>
+                  <div className="font-mono text-[#B85A5A]">{formatCurrency(selected.low)}</div>
                 </div>
                 <div>
-                  <span className="text-zinc-500">Volume</span>
-                  <div className="font-mono text-zinc-300">{(selected.volume / 1000000).toFixed(2)}M</div>
+                  <span className="text-[#8A8B8F]">Volume</span>
+                  <div className="font-mono text-[#1C2333]">{(selected.volume / 1000000).toFixed(2)}M</div>
                 </div>
               </div>
             </div>
@@ -354,13 +354,13 @@ export default function Trading() {
                 <LineChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                   <XAxis 
                     dataKey="time" 
-                    stroke="#52525b" 
+                    stroke="#8A8B8F" 
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis 
-                    stroke="#52525b" 
+                    stroke="#8A8B8F" 
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
@@ -370,24 +370,24 @@ export default function Trading() {
                   <Tooltip content={<CustomTooltip />} />
                   <ReferenceLine 
                     y={chartData[0]?.open} 
-                    stroke="#3f3f46" 
+                    stroke="#B8BAC0" 
                     strokeDasharray="3 3"
                   />
                   <Line
                     type="monotone"
                     dataKey="close"
-                    stroke={selected.change >= 0 ? "#22c55e" : "#ef4444"}
+                    stroke={selected.change >= 0 ? "#4E8A62" : "#B85A5A"}
                     strokeWidth={2}
                     dot={false}
-                    activeDot={{ r: 4, fill: selected.change >= 0 ? "#22c55e" : "#ef4444" }}
+                    activeDot={{ r: 4, fill: selected.change >= 0 ? "#4E8A62" : "#B85A5A" }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
             {/* Live Indicator */}
-            <div className="px-4 pb-3 flex items-center gap-2 text-xs text-zinc-500">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full pulse"></span>
+            <div className="px-4 pb-3 flex items-center gap-2 text-xs text-[#8A8B8F]">
+              <span className="w-2 h-2 bg-[#4E8A62] rounded-full pulse"></span>
               Simulated live data • Updates every 5s
             </div>
           </>
@@ -395,9 +395,9 @@ export default function Trading() {
       </div>
 
       {/* Order Panel - Right Column */}
-      <div className="lg:col-span-3 bg-[#121214] border border-zinc-800 rounded-sm flex flex-col">
-        <div className="p-4 border-b border-zinc-800">
-          <h3 className="font-heading font-semibold text-white">Place Order</h3>
+      <div className="lg:col-span-3 bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] rounded-sm flex flex-col">
+        <div className="p-4 border-b border-[rgba(28,35,51,0.1)]">
+          <h3 className="font-heading font-semibold text-[#1C2333]">Place Order</h3>
         </div>
 
         {selected ? (
@@ -409,7 +409,7 @@ export default function Trading() {
                 onClick={() => setOrderType("buy")}
                 className={orderType === "buy" 
                   ? "btn-buy text-white font-bold"
-                  : "border-zinc-800 text-zinc-400 hover:text-emerald-500 hover:border-emerald-800"
+                  : "border-[rgba(28,35,51,0.1)] text-[#8A8B8F] hover:text-[#3B6FA0] hover:border-[#3B6FA0]"
                 }
                 data-testid="buy-tab"
               >
@@ -420,7 +420,7 @@ export default function Trading() {
                 onClick={() => setOrderType("sell")}
                 className={orderType === "sell"
                   ? "btn-sell text-white font-bold"
-                  : "border-zinc-800 text-zinc-400 hover:text-rose-500 hover:border-rose-800"
+                  : "border-[rgba(28,35,51,0.1)] text-[#8A8B8F] hover:text-[#B85A5A] hover:border-[#B85A5A]"
                 }
                 data-testid="sell-tab"
               >
@@ -430,22 +430,22 @@ export default function Trading() {
 
             {/* Symbol */}
             <div className="mb-4">
-              <Label className="text-zinc-500 text-xs uppercase tracking-wider">Symbol</Label>
-              <div className="mt-1 p-3 bg-zinc-900/50 border border-zinc-800 rounded-sm">
-                <span className="font-bold text-white">{selected.symbol}</span>
-                <span className="text-zinc-500 ml-2">@ {formatCurrency(selected.price)}</span>
+              <Label className="text-[#8A8B8F] text-xs uppercase tracking-wider">Symbol</Label>
+              <div className="mt-1 p-3 bg-[#DEDCD7] border border-[rgba(28,35,51,0.1)] rounded-sm">
+                <span className="font-bold text-[#1C2333]">{selected.symbol}</span>
+                <span className="text-[#8A8B8F] ml-2">@ {formatCurrency(selected.price)}</span>
               </div>
             </div>
 
             {/* Quantity */}
             <div className="mb-4">
-              <Label className="text-zinc-500 text-xs uppercase tracking-wider">Quantity</Label>
+              <Label className="text-[#8A8B8F] text-xs uppercase tracking-wider">Quantity</Label>
               <div className="mt-1 flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="border-zinc-800 text-zinc-400 hover:text-white h-10 w-10"
+                  className="border-[rgba(28,35,51,0.1)] text-[#8A8B8F] hover:text-[#1C2333] bg-[#DEDCD7] h-10 w-10"
                   data-testid="decrease-qty"
                 >
                   <Minus className="w-4 h-4" />
@@ -455,14 +455,14 @@ export default function Trading() {
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                   min={1}
-                  className="text-center font-mono bg-zinc-900/50 border-zinc-800 text-white"
+                  className="text-center font-mono bg-[#DEDCD7] border-[rgba(28,35,51,0.1)] text-[#1C2333]"
                   data-testid="quantity-input"
                 />
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => setQuantity(quantity + 1)}
-                  className="border-zinc-800 text-zinc-400 hover:text-white h-10 w-10"
+                  className="border-[rgba(28,35,51,0.1)] text-[#8A8B8F] hover:text-[#1C2333] bg-[#DEDCD7] h-10 w-10"
                   data-testid="increase-qty"
                 >
                   <Plus className="w-4 h-4" />
@@ -471,19 +471,19 @@ export default function Trading() {
             </div>
 
             {/* Order Summary */}
-            <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-sm mb-4">
+            <div className="p-4 bg-[#DEDCD7] border border-[rgba(28,35,51,0.1)] rounded-sm mb-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-zinc-500 text-sm">Price per share</span>
-                <span className="font-mono text-white">{formatCurrency(selected.price)}</span>
+                <span className="text-[#8A8B8F] text-sm">Price per share</span>
+                <span className="font-mono text-[#1C2333]">{formatCurrency(selected.price)}</span>
               </div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-zinc-500 text-sm">Quantity</span>
-                <span className="font-mono text-white">{quantity}</span>
+                <span className="text-[#8A8B8F] text-sm">Quantity</span>
+                <span className="font-mono text-[#1C2333]">{quantity}</span>
               </div>
-              <div className="border-t border-zinc-800 pt-2 mt-2">
+              <div className="border-t border-[rgba(28,35,51,0.1)] pt-2 mt-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-white font-medium">Total</span>
-                  <span className="font-mono text-lg font-bold text-white">{formatCurrency(totalCost)}</span>
+                  <span className="text-[#1C2333] font-medium">Total</span>
+                  <span className="font-mono text-lg font-bold text-[#3B6FA0]">{formatCurrency(totalCost)}</span>
                 </div>
               </div>
             </div>
@@ -491,14 +491,14 @@ export default function Trading() {
             {/* Balance / Position Info */}
             <div className="mb-4 text-sm">
               {orderType === "buy" ? (
-                <div className="flex items-center justify-between text-zinc-500">
+                <div className="flex items-center justify-between text-[#8A8B8F]">
                   <span>Available Balance</span>
-                  <span className="font-mono text-zinc-300">{formatCurrency(balance)}</span>
+                  <span className="font-mono text-[#1C2333]">{formatCurrency(balance)}</span>
                 </div>
               ) : (
-                <div className="flex items-center justify-between text-zinc-500">
+                <div className="flex items-center justify-between text-[#8A8B8F]">
                   <span>Shares Owned</span>
-                  <span className="font-mono text-zinc-300">{position?.quantity || 0}</span>
+                  <span className="font-mono text-[#1C2333]">{position?.quantity || 0}</span>
                 </div>
               )}
             </div>
@@ -523,10 +523,10 @@ export default function Trading() {
               </Button>
               
               {orderType === "buy" && !canBuy && (
-                <p className="text-rose-500 text-xs text-center mt-2">Insufficient balance</p>
+                <p className="text-[#B85A5A] text-xs text-center mt-2">Insufficient balance</p>
               )}
               {orderType === "sell" && !canSell && (
-                <p className="text-rose-500 text-xs text-center mt-2">
+                <p className="text-[#B85A5A] text-xs text-center mt-2">
                   {position ? "Insufficient shares" : "No position to sell"}
                 </p>
               )}

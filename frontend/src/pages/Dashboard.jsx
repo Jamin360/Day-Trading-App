@@ -175,7 +175,7 @@ export default function Dashboard() {
             size="sm"
             onClick={handleReset}
             disabled={resetting}
-            className="border-zinc-800 text-rose-500 hover:text-rose-400 hover:border-rose-800"
+            className="border-[rgba(28,35,51,0.1)] text-[#B85A5A] hover:text-[#9A4848] hover:border-[#B85A5A]"
             data-testid="reset-account-btn"
           >
             {resetting ? "Resetting..." : "Reset Account"}
@@ -186,16 +186,16 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {/* Total Value */}
-        <div className="bg-[#121214] border border-zinc-800 p-5 rounded-sm" data-testid="total-value-card">
+        <div className="bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] p-5 rounded-sm" data-testid="total-value-card">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Total Value</span>
-            <PieChart className="w-4 h-4 text-blue-500" />
+            <span className="text-xs font-medium uppercase tracking-wider text-[#8A8B8F]">Total Value</span>
+            <PieChart className="w-4 h-4 text-[#3B6FA0]" />
           </div>
-          <div className="font-mono text-2xl font-bold text-white">
+          <div className="font-mono text-2xl font-bold text-[#1C2333]">
             {formatCurrency(portfolio?.total_value || 100000)}
           </div>
           <div className={`flex items-center gap-1 mt-2 text-sm font-mono ${
-            (portfolio?.total_pnl || 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'
+            (portfolio?.total_pnl || 0) >= 0 ? 'text-[#4E8A62]' : 'text-[#B85A5A]'
           }`}>
             {(portfolio?.total_pnl || 0) >= 0 ? (
               <ArrowUpRight className="w-4 h-4" />
@@ -207,52 +207,52 @@ export default function Dashboard() {
         </div>
 
         {/* Cash Balance */}
-        <div className="bg-[#121214] border border-zinc-800 p-5 rounded-sm" data-testid="cash-balance-card">
+        <div className="bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] p-5 rounded-sm" data-testid="cash-balance-card">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Cash Balance</span>
-            <Wallet className="w-4 h-4 text-emerald-500" />
+            <span className="text-xs font-medium uppercase tracking-wider text-[#8A8B8F]">Cash Balance</span>
+            <Wallet className="w-4 h-4 text-[#4E8A62]" />
           </div>
-          <div className="font-mono text-2xl font-bold text-white">
+          <div className="font-mono text-2xl font-bold text-[#1C2333]">
             {formatCurrency(portfolio?.balance || 100000)}
           </div>
-          <div className="text-sm text-zinc-500 mt-2">
+          <div className="text-sm text-[#8A8B8F] mt-2">
             Available to trade
           </div>
         </div>
 
         {/* Portfolio Value */}
-        <div className="bg-[#121214] border border-zinc-800 p-5 rounded-sm" data-testid="portfolio-value-card">
+        <div className="bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] p-5 rounded-sm" data-testid="portfolio-value-card">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Portfolio Value</span>
-            <Activity className="w-4 h-4 text-indigo-500" />
+            <span className="text-xs font-medium uppercase tracking-wider text-[#8A8B8F]">Portfolio Value</span>
+            <Activity className="w-4 h-4 text-[#3B6FA0]" />
           </div>
-          <div className="font-mono text-2xl font-bold text-white">
+          <div className="font-mono text-2xl font-bold text-[#1C2333]">
             {formatCurrency(portfolio?.portfolio_value || 0)}
           </div>
-          <div className="text-sm text-zinc-500 mt-2">
+          <div className="text-sm text-[#8A8B8F] mt-2">
             {portfolio?.positions?.length || 0} positions
           </div>
         </div>
 
         {/* Total P&L */}
-        <div className={`bg-[#121214] border p-5 rounded-sm ${
-          (portfolio?.total_pnl || 0) >= 0 ? 'border-emerald-900/50' : 'border-rose-900/50'
+        <div className={`bg-[#E8E6E1] border p-5 rounded-sm ${
+          (portfolio?.total_pnl || 0) >= 0 ? 'border-[rgba(78,138,98,0.3)]' : 'border-[rgba(184,90,90,0.3)]'
         }`} data-testid="total-pnl-card">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Total P&L</span>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#8A8B8F]">Total P&L</span>
             {(portfolio?.total_pnl || 0) >= 0 ? (
-              <TrendingUp className="w-4 h-4 text-emerald-500" />
+              <TrendingUp className="w-4 h-4 text-[#4E8A62]" />
             ) : (
-              <TrendingDown className="w-4 h-4 text-rose-500" />
+              <TrendingDown className="w-4 h-4 text-[#B85A5A]" />
             )}
           </div>
           <div className={`font-mono text-2xl font-bold ${
-            (portfolio?.total_pnl || 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'
+            (portfolio?.total_pnl || 0) >= 0 ? 'text-[#4E8A62]' : 'text-[#B85A5A]'
           }`}>
             {formatCurrency(portfolio?.total_pnl || 0)}
           </div>
           <div className={`text-sm font-mono mt-2 ${
-            (portfolio?.total_pnl_percent || 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'
+            (portfolio?.total_pnl_percent || 0) >= 0 ? 'text-[#4E8A62]' : 'text-[#B85A5A]'
           }`}>
             {formatPercent(portfolio?.total_pnl_percent || 0)}
           </div>
@@ -262,12 +262,12 @@ export default function Dashboard() {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Positions */}
-        <div className="lg:col-span-2 bg-[#121214] border border-zinc-800 rounded-sm">
-          <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-            <h2 className="font-heading font-semibold text-white">Open Positions</h2>
+        <div className="lg:col-span-2 bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] rounded-sm">
+          <div className="flex items-center justify-between p-4 border-b border-[rgba(28,35,51,0.1)]">
+            <h2 className="font-heading font-semibold text-[#1C2333]">Open Positions</h2>
             <Link 
               to="/trading" 
-              className="text-sm text-blue-500 hover:text-blue-400"
+              className="text-sm text-[#3B6FA0] hover:text-[#2A4F72]"
               data-testid="view-trading-link"
             >
               Trade Now
@@ -275,37 +275,37 @@ export default function Dashboard() {
           </div>
           
           {portfolio?.positions?.length > 0 ? (
-            <div className="divide-y divide-zinc-800">
+            <div className="divide-y divide-[rgba(28,35,51,0.1)]">
               {portfolio.positions.map((position) => (
-                <div key={position.symbol} className="p-4 hover:bg-white/[0.02]" data-testid={`position-${position.symbol}`}>
+                <div key={position.symbol} className="p-4 hover:bg-[#DEDCD7]" data-testid={`position-${position.symbol}`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium text-white">{position.symbol}</div>
-                      <div className="text-sm text-zinc-500">{position.name}</div>
+                      <div className="font-medium text-[#1C2333]">{position.symbol}</div>
+                      <div className="text-sm text-[#8A8B8F]">{position.name}</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono text-white">{formatCurrency(position.market_value)}</div>
+                      <div className="font-mono text-[#1C2333]">{formatCurrency(position.market_value)}</div>
                       <div className={`font-mono text-sm ${
-                        position.pnl >= 0 ? 'text-emerald-500' : 'text-rose-500'
+                        position.pnl >= 0 ? 'text-[#4E8A62]' : 'text-[#B85A5A]'
                       }`}>
                         {position.pnl >= 0 ? '+' : ''}{formatCurrency(position.pnl)} ({formatPercent(position.pnl_percent)})
                       </div>
                     </div>
                   </div>
-                  <div className="mt-2 flex items-center gap-4 text-xs text-zinc-500">
-                    <span>Qty: <span className="font-mono text-zinc-400">{position.quantity}</span></span>
-                    <span>Avg: <span className="font-mono text-zinc-400">{formatCurrency(position.avg_price)}</span></span>
-                    <span>Current: <span className="font-mono text-zinc-400">{formatCurrency(position.current_price)}</span></span>
+                  <div className="mt-2 flex items-center gap-4 text-xs text-[#8A8B8F]">
+                    <span>Qty: <span className="font-mono text-[#1C2333]">{position.quantity}</span></span>
+                    <span>Avg: <span className="font-mono text-[#1C2333]">{formatCurrency(position.avg_price)}</span></span>
+                    <span>Current: <span className="font-mono text-[#1C2333]">{formatCurrency(position.current_price)}</span></span>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="p-8 text-center">
-              <AlertCircle className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
-              <p className="text-zinc-500 mb-4">No open positions yet</p>
+              <AlertCircle className="w-8 h-8 text-[#8A8B8F] mx-auto mb-3" />
+              <p className="text-[#8A8B8F] mb-4">No open positions yet</p>
               <Link to="/trading">
-                <Button className="bg-blue-600 hover:bg-blue-700" data-testid="start-trading-btn">
+                <Button className="bg-[#3B6FA0] hover:bg-[#2A4F72]" data-testid="start-trading-btn">
                   Start Trading
                 </Button>
               </Link>
@@ -314,32 +314,32 @@ export default function Dashboard() {
         </div>
 
         {/* Market Overview */}
-        <div className="bg-[#121214] border border-zinc-800 rounded-sm">
-          <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-            <h2 className="font-heading font-semibold text-white">Market Overview</h2>
-            <div className="flex items-center gap-1 text-xs text-emerald-500">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full pulse"></span>
+        <div className="bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] rounded-sm">
+          <div className="flex items-center justify-between p-4 border-b border-[rgba(28,35,51,0.1)]">
+            <h2 className="font-heading font-semibold text-[#1C2333]">Market Overview</h2>
+            <div className="flex items-center gap-1 text-xs text-[#4E8A62]">
+              <span className="w-2 h-2 bg-[#4E8A62] rounded-full pulse"></span>
               Live
             </div>
           </div>
           
-          <div className="divide-y divide-zinc-800 max-h-[400px] overflow-y-auto">
+          <div className="divide-y divide-[rgba(28,35,51,0.1)] max-h-[400px] overflow-y-auto">
             {stocks.map((stock) => (
               <Link 
                 key={stock.symbol}
                 to={`/trading?symbol=${stock.symbol}`}
-                className="block p-3 hover:bg-white/[0.02]"
+                className="block p-3 hover:bg-[#DEDCD7]"
                 data-testid={`market-${stock.symbol}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium text-white text-sm">{stock.symbol}</div>
-                    <div className="text-xs text-zinc-500 truncate max-w-[120px]">{stock.name}</div>
+                    <div className="font-medium text-[#1C2333] text-sm">{stock.symbol}</div>
+                    <div className="text-xs text-[#8A8B8F] truncate max-w-[120px]">{stock.name}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono text-sm text-white">{formatCurrency(stock.price)}</div>
+                    <div className="font-mono text-sm text-[#1C2333]">{formatCurrency(stock.price)}</div>
                     <div className={`font-mono text-xs ${
-                      stock.change >= 0 ? 'text-emerald-500' : 'text-rose-500'
+                      stock.change >= 0 ? 'text-[#4E8A62]' : 'text-[#B85A5A]'
                     }`}>
                       {stock.change >= 0 ? '+' : ''}{formatPercent(stock.change_percent)}
                     </div>
@@ -353,39 +353,39 @@ export default function Dashboard() {
 
       {/* Recent Trades */}
       {recentTrades.length > 0 && (
-        <div className="mt-6 bg-[#121214] border border-zinc-800 rounded-sm">
-          <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-            <h2 className="font-heading font-semibold text-white">Recent Trades</h2>
+        <div className="mt-6 bg-[#E8E6E1] border border-[rgba(28,35,51,0.1)] rounded-sm">
+          <div className="flex items-center justify-between p-4 border-b border-[rgba(28,35,51,0.1)]">
+            <h2 className="font-heading font-semibold text-[#1C2333]">Recent Trades</h2>
             <Link 
               to="/history" 
-              className="text-sm text-blue-500 hover:text-blue-400"
+              className="text-sm text-[#3B6FA0] hover:text-[#2A4F72]"
               data-testid="view-history-link"
             >
               View All
             </Link>
           </div>
           
-          <div className="divide-y divide-zinc-800">
+          <div className="divide-y divide-[rgba(28,35,51,0.1)]">
             {recentTrades.map((trade) => (
               <div key={trade.id} className="p-4 flex items-center justify-between" data-testid={`trade-${trade.id}`}>
                 <div className="flex items-center gap-3">
                   <div className={`px-2 py-1 text-xs font-bold uppercase rounded-sm ${
                     trade.action === 'buy' 
-                      ? 'bg-emerald-500/10 text-emerald-500' 
-                      : 'bg-rose-500/10 text-rose-500'
+                      ? 'bg-[rgba(78,138,98,0.12)] text-[#4E8A62]' 
+                      : 'bg-[rgba(184,90,90,0.12)] text-[#B85A5A]'
                   }`}>
                     {trade.action}
                   </div>
                   <div>
-                    <div className="font-medium text-white">{trade.symbol}</div>
-                    <div className="text-xs text-zinc-500">
+                    <div className="font-medium text-[#1C2333]">{trade.symbol}</div>
+                    <div className="text-xs text-[#8A8B8F]">
                       {new Date(trade.timestamp).toLocaleString()}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono text-white">{formatCurrency(trade.total)}</div>
-                  <div className="text-xs text-zinc-500">
+                  <div className="font-mono text-[#1C2333]">{formatCurrency(trade.total)}</div>
+                  <div className="text-xs text-[#8A8B8F]">
                     {trade.quantity} shares @ {formatCurrency(trade.price)}
                   </div>
                 </div>

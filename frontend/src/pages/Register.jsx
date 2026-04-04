@@ -59,7 +59,7 @@ export default function Register() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#09090b] grid-bg flex items-center justify-center p-4" data-testid="register-page">
+    <div className="min-h-screen bg-[#F0EEE9] grid-bg flex items-center justify-center p-4" data-testid="register-page">
       {/* Background Image Overlay */}
       <div 
         className="fixed inset-0 opacity-20"
@@ -73,7 +73,7 @@ export default function Register() {
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-12 h-12 bg-blue-600 rounded flex items-center justify-center glow-blue">
+        <div className="w-12 h-12 bg-[#3B6FA0] rounded flex items-center justify-center glow-blue">
             <TrendingUp className="w-7 h-7 text-white" />
           </div>
           <h1 className="font-heading font-bold text-2xl text-white">DayTradingPro</h1>
@@ -91,7 +91,7 @@ export default function Register() {
             <ul className="space-y-2">
               {features.map((feature, i) => (
                 <li key={i} className="flex items-center gap-2 text-sm text-zinc-400">
-                  <Check className="w-4 h-4 text-emerald-500" />
+                  <Check className="w-4 h-4 text-[#4E8A62]" />
                   {feature}
                 </li>
               ))}
@@ -99,7 +99,7 @@ export default function Register() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 p-3 mb-4 bg-rose-500/10 border border-rose-500/20 rounded-sm text-rose-500 text-sm">
+            <div className="flex items-center gap-2 p-3 mb-4 bg-[rgba(184,90,90,0.12)] border border-[#B85A5A]/20 rounded-sm text-[#B85A5A] text-sm">
               <AlertCircle className="w-4 h-4" />
               {error}
             </div>
@@ -107,7 +107,7 @@ export default function Register() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-zinc-400 text-sm">Full Name</Label>
+              <Label htmlFor="name" className="text-[#8A8B8F] text-sm">Full Name</Label>
               <Input
                 id="name"
                 type="text"
@@ -115,13 +115,13 @@ export default function Register() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-blue-500"
+                className="bg-[#DEDCD7] border-[rgba(28,35,51,0.1)] text-[#1C2333] placeholder:text-[#8A8B8F] focus:border-[#3B6FA0]"
                 data-testid="register-name-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-400 text-sm">Email</Label>
+              <Label htmlFor="email" className="text-[#8A8B8F] text-sm">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -129,13 +129,13 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-blue-500"
+                className="bg-[#DEDCD7] border-[rgba(28,35,51,0.1)] text-[#1C2333] placeholder:text-[#8A8B8F] focus:border-[#3B6FA0]"
                 data-testid="register-email-input"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-zinc-400 text-sm">Password</Label>
+              <Label htmlFor="password" className="text-[#8A8B8F] text-sm">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -145,13 +145,13 @@ export default function Register() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-blue-500 pr-10"
+                  className="bg-[#DEDCD7] border-[rgba(28,35,51,0.1)] text-[#1C2333] placeholder:text-[#8A8B8F] focus:border-[#3B6FA0] pr-10"
                   data-testid="register-password-input"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8A8B8F] hover:text-[#1C2333]"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -161,7 +161,7 @@ export default function Register() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 glow-blue"
+              className="w-full bg-[#3B6FA0] hover:bg-[#2A4F72] text-white font-medium py-2.5 glow-blue"
               data-testid="register-submit-btn"
             >
               {loading ? "Creating account..." : "Create Account"}
@@ -169,9 +169,9 @@ export default function Register() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-zinc-500 text-sm">
+            <p className="text-[#8A8B8F] text-sm">
               Already have an account?{" "}
-              <Link to="/login" className="text-blue-500 hover:text-blue-400" data-testid="login-link">
+              <Link to="/login" className="text-[#3B6FA0] hover:text-[#6B9DC8]" data-testid="login-link">
                 Sign in
               </Link>
             </p>

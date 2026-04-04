@@ -34,11 +34,11 @@ export const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="h-16 bg-[#121214] border-b border-zinc-800 sticky top-0 z-50" data-testid="navbar">
+    <nav className="h-16 bg-[#1C2333] border-b border-[rgba(255,255,255,0.07)] sticky top-0 z-50" data-testid="navbar">
       <div className="h-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Logo */}
         <Link to="/dashboard" className="flex items-center gap-2" data-testid="logo-link">
-          <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+          <div className="w-8 h-8 bg-[#6B9DC8] rounded flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <span className="font-heading font-bold text-lg text-white hidden sm:block">
@@ -57,8 +57,8 @@ export const Navbar = () => {
                 flex items-center gap-2 px-3 py-2 rounded-sm text-sm font-medium
                 transition-colors duration-150
                 ${isActive(item.path) 
-                  ? "bg-blue-600/10 text-blue-500" 
-                  : "text-zinc-400 hover:text-white hover:bg-white/5"
+                  ? "bg-[#3B6FA0]/10 text-[#6B9DC8]" 
+                  : "text-[#B8BAC0] hover:text-white hover:bg-[#242B3D]"
                 }
               `}
             >
@@ -71,9 +71,9 @@ export const Navbar = () => {
         {/* User Menu */}
         <div className="flex items-center gap-4">
           {/* Balance Display */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-zinc-900/50 border border-zinc-800 rounded-sm">
-            <Wallet className="w-4 h-4 text-zinc-500" />
-            <span className="font-mono text-sm text-zinc-300" data-testid="nav-balance">
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#242B3D] border border-[rgba(255,255,255,0.07)] rounded-sm">
+            <Wallet className="w-4 h-4 text-[#8A8B8F]" />
+            <span className="font-mono text-sm text-white" data-testid="nav-balance">
               ${user?.balance?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}
             </span>
           </div>
@@ -83,21 +83,21 @@ export const Navbar = () => {
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="ghost" 
-                className="flex items-center gap-2 text-zinc-400 hover:text-white"
+                className="flex items-center gap-2 text-[#B8BAC0] hover:text-white"
                 data-testid="user-menu-trigger"
               >
-                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-[#2A4F72] flex items-center justify-center">
                   <User className="w-4 h-4" />
                 </div>
                 <span className="hidden sm:block text-sm">{user?.name}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-[#18181b] border-zinc-800">
+            <DropdownMenuContent align="end" className="w-56 bg-[#1C2333] border-[rgba(255,255,255,0.07)]">
               <div className="px-3 py-2">
                 <p className="text-sm font-medium text-white">{user?.name}</p>
-                <p className="text-xs text-zinc-500">{user?.email}</p>
+                <p className="text-xs text-[#8A8B8F]">{user?.email}</p>
               </div>
-              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuSeparator className="bg-[rgba(255,255,255,0.07)]" />
               <DropdownMenuItem className="sm:hidden">
                 <Wallet className="w-4 h-4 mr-2" />
                 <span className="font-mono">${user?.balance?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}</span>
