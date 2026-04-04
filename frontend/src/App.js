@@ -213,7 +213,7 @@ const AppLayout = ({ children }) => {
 
 function App() {
   return (
-    <BrowserRouter basename="/Day-Trading-App">
+    <BrowserRouter>
       <AuthProvider>
         <Routes>
           {/* Public Routes */}
