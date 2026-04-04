@@ -49,11 +49,20 @@ const AuthProvider = ({ children }) => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔔 [AUTH LISTENER] Event triggered:', event);
+      console.log('🔔 [AUTH LISTENER] Session:', session?.user?.email);
       setSession(session);
-      if (session?.user) {
+      
+      // Don't fetch profile on SIGNED_UP event - let register() handle it
+      if (event === 'SIGNED_IN' && session?.user) {
+        console.log('🔔 [AUTH LISTENER] SIGNED_IN - fetching profile');
+        fetchUserProfile(session.user.id);
+      } else if (session?.user && event !== 'SIGNED_UP') {
+        console.log('🔔 [AUTH LISTENER]', event, '- fetching profile');
         fetchUserProfile(session.user.id);
       } else {
+        console.log('🔔 [AUTH LISTENER] Clearing user state');
         setUser(null);
         setLoading(false);
       }
@@ -86,18 +95,67 @@ const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    if (error) {
+      throw new Error(error.message);
+    }
   };
 
   const register = async (email, password, name) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name },
-      },
-    });
-    if (error) throw error;
+    console.log('📝 [REGISTER] Starting registration for:', email);
+    
+    try {
+      console.log('📝 [REGISTER] Calling supabase.auth.signUp...');
+      
+      // Sign up the user
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name },
+        },
+      });
+      
+      console.log('📝 [REGISTER] signUp returned - data:', data?.user?.email);
+      console.log('📝 [REGISTER] signUp returned - error:', error);
+      
+      if (error) {
+        console.error('📝 [REGISTER] Error during signUp:', error.message);
+        throw new Error(error.message);
+      }
+
+      // Manually create profile after signup completes
+      if (data?.user) {
+        console.log('📝 [REGISTER] User created, waiting 100ms before profile insert...');
+        // Small delay to ensure signup is fully processed
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        console.log('📝 [REGISTER] Inserting profile into database...');
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            email: data.user.email,
+            name: name,
+            balance: 100000.00
+          });
+        
+        if (profileError) {
+          console.log('📝 [REGISTER] Profile insert error:', profileError);
+          if (!profileError.message.includes('duplicate')) {
+            console.error('📝 [REGISTER] Non-duplicate profile error:', profileError);
+          } else {
+            console.log('📝 [REGISTER] Profile already exists (duplicate key)');
+          }
+        } else {
+          console.log('📝 [REGISTER] Profile created successfully!');
+        }
+      }
+      
+      console.log('📝 [REGISTER] Registration complete!');
+    } catch (err) {
+      console.error('📝 [REGISTER] Exception caught:', err);
+      throw err;
+    }
   };
 
   const logout = async () => {

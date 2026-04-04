@@ -22,23 +22,32 @@ export default function Register() {
     e.preventDefault();
     setError("");
     
+    console.log('🚀 [FORM] Submit button clicked');
+    console.log('🚀 [FORM] Email:', email);
+    console.log('🚀 [FORM] Name:', name);
+    
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
       return;
     }
 
     setLoading(true);
+    console.log('🚀 [FORM] Calling register function...');
 
     try {
       await register(email, password, name);
+      console.log('🚀 [FORM] Register completed successfully!');
       toast.success("Account created! Please check your email to verify your account.");
       navigate("/dashboard");
     } catch (err) {
+      console.error('🚀 [FORM] Error caught in handleSubmit:', err);
+      console.error('🚀 [FORM] Error stack:', err.stack);
       const message = err.message || "Registration failed. Please try again.";
       setError(message);
       toast.error(message);
     } finally {
       setLoading(false);
+      console.log('🚀 [FORM] Submit handler complete');
     }
   };
 
