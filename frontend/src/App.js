@@ -121,6 +121,14 @@ const AuthProvider = ({ children }) => {
       // Log profile errors but don't block user
       if (profileError) {
         console.error('Profile creation error:', profileError);
+      } else {
+        // Set user profile immediately for instant UI update
+        setUser({
+          id: data.user.id,
+          email: data.user.email,
+          name: name,
+          balance: 100000.00
+        });
       }
     }
     
