@@ -32,10 +32,13 @@ export default function Trading() {
   const [searchParams] = useSearchParams();
   
   const [stocks, setStocks] = useState([]);
-  const [selectedStock, setSelectedStock] = useState(null);
+  const [selectedSymbol, setSelectedSymbol] = useState(null);
   const [priceHistory, setPriceHistory] = useState([]);
   const [positions, setPositions] = useState([]);
   const [balance, setBalance] = useState(0);
+
+  // Derive selected stock from stocks array (never stale)
+  const selected = stocks.find(s => s.symbol === selectedSymbol) ?? stocks[0];
   
   const [orderType, setOrderType] = useState("buy");
   const [quantity, setQuantity] = useState(1);
@@ -45,17 +48,8 @@ export default function Trading() {
   const fetchStocks = async () => {
     try {
       const stocksData = getStockData();
-      // Use functional updater to avoid stale closure issues
-      setStocks(() => stocksData);
-      
-      // Update selected stock price without changing selection
-      setSelectedStock(prev => {
-        if (prev) {
-          const updated = stocksData.find(s => s.symbol === prev.symbol);
-          return updated ?? prev;
-        }
-        return prev;
-      });
+      // Use functional updater to avoid stale closure
+      setStocks(prev => stocksData);
     } catch (error) {
       console.error("Failed to fetch stocks:", error);
     }
@@ -84,22 +78,15 @@ export default function Trading() {
 
   useEffect(() => {
     const init = async () => {
-      // Initial fetch
-      const stocksData = getStockData();
-      setStocks(stocksData);
+      await Promise.all([fetchStocks(), fetchPortfolio()]);
       
-      // Select initial stock from URL param or default to first stock
+      // Set initial selected stock from URL param or first stock
       const symbolParam = searchParams.get("symbol");
-      const initialStock = symbolParam 
-        ? stocksData.find(s => s.symbol === symbolParam) ?? stocksData[0]
-        : stocksData[0];
-      
-      if (initialStock) {
-        setSelectedStock(initialStock);
-        fetchPriceHistory(initialStock.symbol);
+      if (symbolParam) {
+        setSelectedSymbol(symbolParam);
+        fetchPriceHistory(symbolParam);
       }
       
-      await fetchPortfolio();
       setLoading(false);
     };
     init();
@@ -115,25 +102,25 @@ export default function Trading() {
   }, []);
 
   const handleStockSelect = (stock) => {
-    setSelectedStock(stock);
+    setSelectedSymbol(stock.symbol);
     fetchPriceHistory(stock.symbol);
     setQuantity(1);
   };
 
   const handleTrade = async () => {
-    if (!selectedStock || quantity <= 0 || !user?.id) return;
+    if (!selected || quantity <= 0 || !user?.id) return;
 
     setExecuting(true);
     try {
       await executeTrade(
         user.id,
-        selectedStock.symbol,
+        selected.symbol,
         orderType,
         quantity,
-        selectedStock.price
+        selected.price
       );
 
-      toast.success(`${orderType === 'buy' ? 'Bought' : 'Sold'} ${quantity} shares of ${selectedStock.symbol}`);
+      toast.success(`${orderType === 'buy' ? 'Bought' : 'Sold'} ${quantity} shares of ${selected.symbol}`);
       fetchPortfolio();
       setQuantity(1);
     } catch (error) {
@@ -157,9 +144,9 @@ export default function Trading() {
     return `${sign}${value.toFixed(2)}%`;
   };
 
-  const totalCost = selectedStock ? selectedStock.price * quantity : 0;
+  const totalCost = selected ? selected.price * quantity : 0;
   const canBuy = orderType === "buy" && totalCost <= balance;
-  const position = positions.find(p => p.symbol === selectedStock?.symbol);
+  const position = positions.find(p => p.symbol === selected?.symbol);
   const canSell = orderType === "sell" && position && position.quantity >= quantity;
 
   const CustomTooltip = ({ active, payload }) => {
@@ -210,7 +197,7 @@ export default function Trading() {
                   key={stock.symbol}
                   onClick={() => handleStockSelect(stock)}
                   className={`p-3 cursor-pointer transition-colors duration-150 ${
-                    selectedStock?.symbol === stock.symbol 
+                    selected?.symbol === stock.symbol 
                       ? 'bg-blue-500/10 border-l-2 border-l-blue-500' 
                       : 'hover:bg-white/[0.02]'
                   }`}
@@ -240,31 +227,31 @@ export default function Trading() {
 
       {/* Chart - Center Column */}
       <div className="lg:col-span-6 xl:col-span-7 bg-[#121214] border border-zinc-800 rounded-sm flex flex-col">
-        {selectedStock && (
+        {selected && (
           <>
             {/* Chart Header */}
             <div className="p-4 border-b border-zinc-800">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-3">
-                    <h2 className="font-heading font-bold text-xl text-white">{selectedStock.symbol}</h2>
+                    <h2 className="font-heading font-bold text-xl text-white">{selected.symbol}</h2>
                     <span className={`px-2 py-0.5 text-xs font-medium rounded-sm ${
-                      selectedStock.change >= 0 
+                      selected.change >= 0 
                         ? 'bg-emerald-500/10 text-emerald-500' 
                         : 'bg-rose-500/10 text-rose-500'
                     }`}>
-                      {selectedStock.change >= 0 ? <TrendingUp className="w-3 h-3 inline mr-1" /> : <TrendingDown className="w-3 h-3 inline mr-1" />}
-                      {formatPercent(selectedStock.change_percent)}
+                      {selected.change >= 0 ? <TrendingUp className="w-3 h-3 inline mr-1" /> : <TrendingDown className="w-3 h-3 inline mr-1" />}
+                      {formatPercent(selected.change_percent)}
                     </span>
                   </div>
-                  <div className="text-sm text-zinc-500">{selectedStock.name}</div>
+                  <div className="text-sm text-zinc-500">{selected.name}</div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono text-2xl font-bold text-white">{formatCurrency(selectedStock.price)}</div>
+                  <div className="font-mono text-2xl font-bold text-white">{formatCurrency(selected.price)}</div>
                   <div className={`font-mono text-sm ${
-                    selectedStock.change >= 0 ? 'text-emerald-500' : 'text-rose-500'
+                    selected.change >= 0 ? 'text-emerald-500' : 'text-rose-500'
                   }`}>
-                    {selectedStock.change >= 0 ? '+' : ''}{formatCurrency(selectedStock.change)}
+                    {selected.change >= 0 ? '+' : ''}{formatCurrency(selected.change)}
                   </div>
                 </div>
               </div>
@@ -273,19 +260,19 @@ export default function Trading() {
               <div className="mt-4 grid grid-cols-4 gap-4 text-xs">
                 <div>
                   <span className="text-zinc-500">Open</span>
-                  <div className="font-mono text-zinc-300">{formatCurrency(selectedStock.open)}</div>
+                  <div className="font-mono text-zinc-300">{formatCurrency(selected.open)}</div>
                 </div>
                 <div>
                   <span className="text-zinc-500">High</span>
-                  <div className="font-mono text-emerald-500">{formatCurrency(selectedStock.high)}</div>
+                  <div className="font-mono text-emerald-500">{formatCurrency(selected.high)}</div>
                 </div>
                 <div>
                   <span className="text-zinc-500">Low</span>
-                  <div className="font-mono text-rose-500">{formatCurrency(selectedStock.low)}</div>
+                  <div className="font-mono text-rose-500">{formatCurrency(selected.low)}</div>
                 </div>
                 <div>
                   <span className="text-zinc-500">Volume</span>
-                  <div className="font-mono text-zinc-300">{(selectedStock.volume / 1000000).toFixed(2)}M</div>
+                  <div className="font-mono text-zinc-300">{(selected.volume / 1000000).toFixed(2)}M</div>
                 </div>
               </div>
             </div>
@@ -318,10 +305,10 @@ export default function Trading() {
                   <Line
                     type="monotone"
                     dataKey="close"
-                    stroke={selectedStock.change >= 0 ? "#22c55e" : "#ef4444"}
+                    stroke={selected.change >= 0 ? "#22c55e" : "#ef4444"}
                     strokeWidth={2}
                     dot={false}
-                    activeDot={{ r: 4, fill: selectedStock.change >= 0 ? "#22c55e" : "#ef4444" }}
+                    activeDot={{ r: 4, fill: selected.change >= 0 ? "#22c55e" : "#ef4444" }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -342,7 +329,7 @@ export default function Trading() {
           <h3 className="font-heading font-semibold text-white">Place Order</h3>
         </div>
 
-        {selectedStock ? (
+        {selected ? (
           <div className="p-4 flex-1 flex flex-col">
             {/* Buy/Sell Toggle */}
             <div className="grid grid-cols-2 gap-2 mb-4">
@@ -374,8 +361,8 @@ export default function Trading() {
             <div className="mb-4">
               <Label className="text-zinc-500 text-xs uppercase tracking-wider">Symbol</Label>
               <div className="mt-1 p-3 bg-zinc-900/50 border border-zinc-800 rounded-sm">
-                <span className="font-bold text-white">{selectedStock.symbol}</span>
-                <span className="text-zinc-500 ml-2">@ {formatCurrency(selectedStock.price)}</span>
+                <span className="font-bold text-white">{selected.symbol}</span>
+                <span className="text-zinc-500 ml-2">@ {formatCurrency(selected.price)}</span>
               </div>
             </div>
 
@@ -416,7 +403,7 @@ export default function Trading() {
             <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-sm mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-zinc-500 text-sm">Price per share</span>
-                <span className="font-mono text-white">{formatCurrency(selectedStock.price)}</span>
+                <span className="font-mono text-white">{formatCurrency(selected.price)}</span>
               </div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-zinc-500 text-sm">Quantity</span>
@@ -460,7 +447,7 @@ export default function Trading() {
                 {executing ? (
                   <RefreshCw className="w-4 h-4 animate-spin" />
                 ) : (
-                  `${orderType === "buy" ? "Buy" : "Sell"} ${selectedStock.symbol}`
+                  `${orderType === "buy" ? "Buy" : "Sell"} ${selected.symbol}`
                 )}
               </Button>
               
