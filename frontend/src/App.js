@@ -106,16 +106,18 @@ const AuthProvider = ({ children }) => {
     try {
       console.log('📝 [REGISTER] Calling supabase.auth.signUp...');
       
-      // Sign up the user
+      // Sign up the user with email confirmation disabled
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: { name },
+          emailRedirectTo: window.location.origin + '/Day-Trading-App/dashboard',
         },
       });
       
       console.log('📝 [REGISTER] signUp returned - data:', data?.user?.email);
+      console.log('📝 [REGISTER] signUp returned - user confirmed:', data?.user?.confirmed_at);
       console.log('📝 [REGISTER] signUp returned - error:', error);
       
       if (error) {
