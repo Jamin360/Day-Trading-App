@@ -35,15 +35,16 @@ export default function Trading() {
   const [selectedSymbol, setSelectedSymbol] = useState(null);
   const [positions, setPositions] = useState([]);
   const [balance, setBalance] = useState(0);
+  const [chartData, setChartData] = useState([]);
 
   // Store chart history for all stocks
   const chartHistories = useRef({});
+  
+  // Store selectedSymbol in ref so interval can access latest value
+  const selectedSymbolRef = useRef(selectedSymbol);
 
   // Derive selected stock from stocks array (never stale)
   const selected = stocks.find(s => s.symbol === selectedSymbol) ?? stocks[0];
-  
-  // Derive chart data for selected stock
-  const chartData = chartHistories.current[selectedSymbol] || [];
   
   const [orderType, setOrderType] = useState("buy");
   const [quantity, setQuantity] = useState(1);
@@ -80,6 +81,12 @@ export default function Trading() {
           }
         });
         
+        // Update chartData for currently selected stock to trigger re-render
+        const currentSymbol = selectedSymbolRef.current;
+        if (currentSymbol && chartHistories.current[currentSymbol]) {
+          setChartData([...chartHistories.current[currentSymbol]]);
+        }
+        
         return stocksData;
       });
     } catch (error) {
@@ -99,6 +106,37 @@ export default function Trading() {
     }
   };
 
+  // Keep selectedSymbolRef in sync with selectedSymbol
+  useEffect(() => {
+    selectedSymbolRef.current = selectedSymbol;
+  }, [selectedSymbol]);
+
+  // Seed initial chart data when stocks load
+  useEffect(() => {
+    if (stocks.length > 0) {
+      stocks.forEach(stock => {
+        if (!chartHistories.current[stock.symbol]) {
+          const now = new Date();
+          const timeStr = now.toTimeString().slice(0, 5);
+          chartHistories.current[stock.symbol] = [{
+            time: timeStr,
+            open: stock.open,
+            high: stock.high,
+            low: stock.low,
+            close: stock.price,
+            volume: stock.volume
+          }];
+        }
+      });
+      
+      // Set initial chartData for selected stock
+      const currentSymbol = selectedSymbol || stocks[0]?.symbol;
+      if (currentSymbol && chartHistories.current[currentSymbol]) {
+        setChartData([...chartHistories.current[currentSymbol]]);
+      }
+    }
+  }, [stocks]);
+
   useEffect(() => {
     const init = async () => {
       // Initialize chart histories with historical data for all stocks
@@ -113,6 +151,10 @@ export default function Trading() {
       const symbolParam = searchParams.get("symbol");
       if (symbolParam) {
         setSelectedSymbol(symbolParam);
+        setChartData([...chartHistories.current[symbolParam]]);
+      } else if (stocksData[0]) {
+        setSelectedSymbol(stocksData[0].symbol);
+        setChartData([...chartHistories.current[stocksData[0].symbol]]);
       }
       
       setLoading(false);
@@ -131,6 +173,8 @@ export default function Trading() {
 
   const handleStockSelect = (stock) => {
     setSelectedSymbol(stock.symbol);
+    // Immediately update chartData from ref so it renders instantly
+    setChartData([...(chartHistories.current[stock.symbol] || [])]);
     setQuantity(1);
   };
 
