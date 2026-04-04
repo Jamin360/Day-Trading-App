@@ -140,22 +140,26 @@ const AuthProvider = ({ children }) => {
         // Small delay to ensure signup is fully processed
         await new Promise(resolve => setTimeout(resolve, 100));
         
-        console.log('📝 [REGISTER] Inserting profile into database...');
+        console.log('📝 [REGISTER] Inserting/updating profile in database...');
         const profileData = {
           id: data.user.id,
           email: data.user.email,
           name: name,
           balance: 100000
         };
-        console.log('📝 [REGISTER] Profile data to insert:', profileData);
+        console.log('📝 [REGISTER] Profile data to upsert:', profileData);
         
+        // Use upsert to handle case where trigger already created profile
         const { data: insertedProfile, error: profileError } = await supabase
           .from('profiles')
-          .insert(profileData)
+          .upsert(profileData, { 
+            onConflict: 'id',
+            ignoreDuplicates: false 
+          })
           .select()
           .single();
         
-        console.log('📝 [REGISTER] Inserted profile:', insertedProfile);
+        console.log('📝 [REGISTER] Upserted profile:', insertedProfile);
         
         if (profileError) {
           console.log('📝 [REGISTER] Profile insert error:', profileError);
