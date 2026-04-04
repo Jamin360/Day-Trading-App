@@ -45,22 +45,17 @@ export default function Trading() {
   const fetchStocks = async () => {
     try {
       const stocksData = getStockData();
-      setStocks(stocksData);
+      // Use functional updater to avoid stale closure issues
+      setStocks(() => stocksData);
       
-      // Select initial stock
-      const symbolParam = searchParams.get("symbol");
-      const initialStock = symbolParam 
-        ? stocksData.find(s => s.symbol === symbolParam) || stocksData[0]
-        : stocksData[0];
-      
-      if (initialStock && (!selectedStock || selectedStock.symbol !== initialStock.symbol)) {
-        setSelectedStock(initialStock);
-        fetchPriceHistory(initialStock.symbol);
-      } else if (selectedStock) {
-        // Update selected stock price
-        const updated = stocksData.find(s => s.symbol === selectedStock.symbol);
-        if (updated) setSelectedStock(updated);
-      }
+      // Update selected stock price without changing selection
+      setSelectedStock(prev => {
+        if (prev) {
+          const updated = stocksData.find(s => s.symbol === prev.symbol);
+          return updated ?? prev;
+        }
+        return prev;
+      });
     } catch (error) {
       console.error("Failed to fetch stocks:", error);
     }
@@ -89,7 +84,22 @@ export default function Trading() {
 
   useEffect(() => {
     const init = async () => {
-      await Promise.all([fetchStocks(), fetchPortfolio()]);
+      // Initial fetch
+      const stocksData = getStockData();
+      setStocks(stocksData);
+      
+      // Select initial stock from URL param or default to first stock
+      const symbolParam = searchParams.get("symbol");
+      const initialStock = symbolParam 
+        ? stocksData.find(s => s.symbol === symbolParam) ?? stocksData[0]
+        : stocksData[0];
+      
+      if (initialStock) {
+        setSelectedStock(initialStock);
+        fetchPriceHistory(initialStock.symbol);
+      }
+      
+      await fetchPortfolio();
       setLoading(false);
     };
     init();
@@ -102,7 +112,7 @@ export default function Trading() {
       clearInterval(stockInterval);
       clearInterval(portfolioInterval);
     };
-  }, [user?.id]);
+  }, []);
 
   const handleStockSelect = (stock) => {
     setSelectedStock(stock);
