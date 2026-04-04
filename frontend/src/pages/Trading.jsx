@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth, supabase } from "@/App";
 import { useSearchParams } from "react-router-dom";
-import { getStockData, generatePriceHistory } from "@/lib/supabase";
+import { getStockData, generatePriceHistory, generateLongTermHistory } from "@/lib/supabase";
 import { executeTrade, getPortfolio } from "@/lib/trading";
 import { 
   TrendingUp, 
@@ -36,11 +36,16 @@ export default function Trading() {
   const [priceHistory, setPriceHistory] = useState([]);
   const [positions, setPositions] = useState([]);
   const [balance, setBalance] = useState(0);
+  const [timeframe, setTimeframe] = useState('1D');
   
   const [orderType, setOrderType] = useState("buy");
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
+  
+  // Store full chart history per symbol
+  const chartHistoryRef = useRef({});
+  const chartContainerRef = useRef(null);
 
   const fetchStocks = async () => {
     try {
@@ -48,10 +53,33 @@ export default function Trading() {
       // Use functional updater to avoid stale closure issues
       setStocks(() => stocksData);
       
-      // Update selected stock price without changing selection
+      // Update selected stock price and append to chart history
       setSelectedStock(prev => {
         if (prev) {
           const updated = stocksData.find(s => s.symbol === prev.symbol);
+          if (updated) {
+            // Append new price point to chart history
+            const newDataPoint = {
+              timestamp: Date.now(),
+              time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+              date: new Date().toLocaleDateString('en-US'),
+              price: updated.price,
+              high: updated.high,
+              low: updated.low,
+              volume: Math.floor(Math.random() * 500000) + 50000
+            };
+            
+            if (!chartHistoryRef.current[updated.symbol]) {
+              chartHistoryRef.current[updated.symbol] = [];
+            }
+            chartHistoryRef.current[updated.symbol] = [
+              ...chartHistoryRef.current[updated.symbol],
+              newDataPoint
+            ];
+            
+            // Update displayed price history
+            updateDisplayedHistory(updated.symbol);
+          }
           return updated ?? prev;
         }
         return prev;
@@ -61,13 +89,47 @@ export default function Trading() {
     }
   };
 
-  const fetchPriceHistory = async (symbol) => {
-    try {
-      const history = generatePriceHistory(symbol, 60);
-      setPriceHistory(history);
-    } catch (error) {
-      console.error("Failed to fetch price history:", error);
+  const updateDisplayedHistory = (symbol) => {
+    if (!chartHistoryRef.current[symbol]) return;
+    
+    const fullHistory = chartHistoryRef.current[symbol];
+    const now = Date.now();
+    let filtered = fullHistory;
+    
+    // Filter based on selected timeframe
+    switch (timeframe) {
+      case '1D':
+        filtered = fullHistory.filter(p => now - p.timestamp <= 24 * 60 * 60 * 1000);
+        break;
+      case '1W':
+        filtered = fullHistory.filter(p => now - p.timestamp <= 7 * 24 * 60 * 60 * 1000);
+        break;
+      case '1M':
+        filtered = fullHistory.filter(p => now - p.timestamp <= 30 * 24 * 60 * 60 * 1000);
+        break;
+      case '1Y':
+        filtered = fullHistory.filter(p => now - p.timestamp <= 365 * 24 * 60 * 60 * 1000);
+        break;
+      default:
+        filtered = fullHistory;
     }
+    
+    setPriceHistory(filtered);
+    
+    // Auto-scroll to latest data
+    setTimeout(() => {
+      if (chartContainerRef.current) {
+        chartContainerRef.current.scrollLeft = chartContainerRef.current.scrollWidth;
+      }
+    }, 100);
+  };
+  
+  const loadStockHistory = (symbol) => {
+    // If we don't have history for this symbol, generate it
+    if (!chartHistoryRef.current[symbol]) {
+      chartHistoryRef.current[symbol] = generateLongTermHistory(symbol, 365);
+    }
+    updateDisplayedHistory(symbol);
   };
 
   const fetchPortfolio = async () => {
@@ -88,6 +150,11 @@ export default function Trading() {
       const stocksData = getStockData();
       setStocks(stocksData);
       
+      // Pre-generate 1 year of historical data for all stocks
+      stocksData.forEach(stock => {
+        chartHistoryRef.current[stock.symbol] = generateLongTermHistory(stock.symbol, 365);
+      });
+      
       // Select initial stock from URL param or default to first stock
       const symbolParam = searchParams.get("symbol");
       const initialStock = symbolParam 
@@ -96,7 +163,7 @@ export default function Trading() {
       
       if (initialStock) {
         setSelectedStock(initialStock);
-        fetchPriceHistory(initialStock.symbol);
+        loadStockHistory(initialStock.symbol);
       }
       
       await fetchPortfolio();
@@ -113,10 +180,17 @@ export default function Trading() {
       clearInterval(portfolioInterval);
     };
   }, []);
+  
+  // Update displayed history when timeframe changes
+  useEffect(() => {
+    if (selectedStock) {
+      updateDisplayedHistory(selectedStock.symbol);
+    }
+  }, [timeframe]);
 
   const handleStockSelect = (stock) => {
     setSelectedStock(stock);
-    fetchPriceHistory(stock.symbol);
+    loadStockHistory(stock.symbol);
     setQuantity(1);
   };
 
@@ -169,14 +243,14 @@ export default function Trading() {
         <div className="bg-[#18181b] border border-zinc-700 p-3 rounded-sm text-xs">
           <div className="font-mono text-zinc-400 mb-1">{data.time}</div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-            <span className="text-zinc-500">Open:</span>
-            <span className="font-mono text-white">{formatCurrency(data.open)}</span>
+            <span className="text-zinc-500">Price:</span>
+            <span className="font-mono text-white">{formatCurrency(data.price)}</span>
             <span className="text-zinc-500">High:</span>
             <span className="font-mono text-emerald-500">{formatCurrency(data.high)}</span>
             <span className="text-zinc-500">Low:</span>
             <span className="font-mono text-rose-500">{formatCurrency(data.low)}</span>
-            <span className="text-zinc-500">Close:</span>
-            <span className="font-mono text-white">{formatCurrency(data.close)}</span>
+            <span className="text-zinc-500">Volume:</span>
+            <span className="font-mono text-zinc-300">{(data.volume / 1000000).toFixed(2)}M</span>
           </div>
         </div>
       );
@@ -290,41 +364,71 @@ export default function Trading() {
               </div>
             </div>
 
+            {/* Timeframe Selector */}
+            <div className="px-4 py-3 border-b border-zinc-800 flex items-center gap-2">
+              {['1D', '1W', '1M', '1Y'].map(tf => (
+                <button
+                  key={tf}
+                  onClick={() => setTimeframe(tf)}
+                  className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                    timeframe === tf
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                  }`}
+                >
+                  {tf}
+                </button>
+              ))}
+            </div>
+
             {/* Chart */}
-            <div className="flex-1 p-4" data-testid="price-chart">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={priceHistory} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                  <XAxis 
-                    dataKey="time" 
-                    stroke="#52525b" 
-                    fontSize={10}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis 
-                    stroke="#52525b" 
-                    fontSize={10}
-                    tickLine={false}
-                    axisLine={false}
-                    domain={['auto', 'auto']}
-                    tickFormatter={(value) => `$${value.toFixed(0)}`}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <ReferenceLine 
-                    y={priceHistory[0]?.open} 
-                    stroke="#3f3f46" 
-                    strokeDasharray="3 3"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="close"
-                    stroke={selectedStock.change >= 0 ? "#22c55e" : "#ef4444"}
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4, fill: selectedStock.change >= 0 ? "#22c55e" : "#ef4444" }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+            <div className="flex-1 relative flex" data-testid="price-chart">
+              {/* Sticky Y-axis spacer */}
+              <div className="absolute left-0 top-0 bottom-0 w-12 bg-[#121214] z-10 pointer-events-none" />
+              
+              {/* Scrollable chart container */}
+              <div 
+                ref={chartContainerRef}
+                className="flex-1 overflow-x-auto overflow-y-hidden p-4"
+                style={{ scrollbarWidth: 'thin' }}
+              >
+                <div style={{ width: Math.max(800, priceHistory.length * 3), height: '100%', minHeight: '300px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={priceHistory} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                      <XAxis 
+                        dataKey="time" 
+                        stroke="#52525b" 
+                        fontSize={10}
+                        tickLine={false}
+                        axisLine={false}
+                        interval="preserveStartEnd"
+                      />
+                      <YAxis 
+                        stroke="#52525b" 
+                        fontSize={10}
+                        tickLine={false}
+                        axisLine={false}
+                        domain={['auto', 'auto']}
+                        tickFormatter={(value) => `$${value.toFixed(0)}`}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <ReferenceLine 
+                        y={priceHistory[0]?.price} 
+                        stroke="#3f3f46" 
+                        strokeDasharray="3 3"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="price"
+                        stroke={selectedStock.change >= 0 ? "#22c55e" : "#ef4444"}
+                        strokeWidth={2}
+                        dot={false}
+                        activeDot={{ r: 4, fill: selectedStock.change >= 0 ? "#22c55e" : "#ef4444" }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </div>
 
             {/* Live Indicator */}

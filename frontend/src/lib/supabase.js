@@ -167,3 +167,69 @@ export function generatePriceHistory(symbol, minutes = 60) {
   
   return history;
 }
+
+// Generate long-term historical data for realistic chart (up to 1 year)
+// Uses seeded random walk for consistent, realistic price movement
+export function generateLongTermHistory(symbol, days = 365) {
+  if (!STOCKS[symbol]) return [];
+  
+  const stock = STOCKS[symbol];
+  const history = [];
+  
+  // Start from a price range around base price
+  let price = stock.basePrice * (0.85 + Math.random() * 0.30);
+  
+  // Generate data points (one per 5 minutes for intraday, one per hour for older data)
+  const now = Date.now();
+  const oneDayMs = 24 * 60 * 60 * 1000;
+  const oneWeekMs = 7 * oneDayMs;
+  
+  // For data older than 1 week: hourly points
+  // For data 1 day to 1 week: 15-minute points
+  // For last 24 hours: 5-minute points
+  const intervals = [];
+  
+  // Year to week ago: hourly (24 points per day)
+  for (let d = days; d > 7; d--) {
+    for (let h = 0; h < 24; h++) {
+      intervals.push(now - (d * oneDayMs) + (h * 60 * 60 * 1000));
+    }
+  }
+  
+  // Week to day ago: 15-minute intervals (96 points per day)
+  for (let d = 7; d > 1; d--) {
+    for (let i = 0; i < 96; i++) {
+      intervals.push(now - (d * oneDayMs) + (i * 15 * 60 * 1000));
+    }
+  }
+  
+  // Last 24 hours: 5-minute intervals (288 points)
+  for (let i = 0; i < 288; i++) {
+    intervals.push(now - oneDayMs + (i * 5 * 60 * 1000));
+  }
+  
+  // Generate price points using random walk
+  intervals.forEach((timestamp) => {
+    const normalRandom = randomNormal();
+    let priceChange = stock.drift + stock.volatility * normalRandom;
+    priceChange = Math.max(-0.08, Math.min(0.08, priceChange));
+    
+    const newPrice = price * (1 + priceChange);
+    const high = newPrice * (1 + Math.random() * 0.003);
+    const low = newPrice * (1 - Math.random() * 0.003);
+    
+    history.push({
+      timestamp,
+      time: new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      date: new Date(timestamp).toLocaleDateString('en-US'),
+      price: parseFloat(newPrice.toFixed(2)),
+      high: parseFloat(high.toFixed(2)),
+      low: parseFloat(low.toFixed(2)),
+      volume: Math.floor(Math.random() * 1000000) + 100000
+    });
+    
+    price = newPrice;
+  });
+  
+  return history;
+}
