@@ -145,7 +145,7 @@ const AuthProvider = ({ children }) => {
           id: data.user.id,
           email: data.user.email,
           name: name,
-          balance: 100000
+          balance: 100000.00
         };
         console.log('📝 [REGISTER] Profile data to upsert:', profileData);
         
@@ -153,8 +153,7 @@ const AuthProvider = ({ children }) => {
         const { data: insertedProfile, error: profileError } = await supabase
           .from('profiles')
           .upsert(profileData, { 
-            onConflict: 'id',
-            ignoreDuplicates: false 
+            onConflict: 'id'
           })
           .select()
           .single();
